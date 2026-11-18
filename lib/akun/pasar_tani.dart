@@ -577,6 +577,11 @@ class _PasarTaniScreenState extends State<PasarTaniScreen> {
           ],
         ),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.receipt_long_outlined, color: Colors.white),
+            tooltip: 'Log Order',
+            onPressed: _showSyncedOrdersModal,
+          ),
           ListenableBuilder(
             listenable: store,
             builder: (context, _) {
@@ -628,99 +633,6 @@ class _PasarTaniScreenState extends State<PasarTaniScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // WhatsApp Commerce Card
-                Container(
-                  margin: const EdgeInsets.only(bottom: 16),
-                  padding: const EdgeInsets.all(14),
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFF075E54), Color(0xFF128C7E)],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Colors.black12,
-                        blurRadius: 6,
-                        offset: Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: const [
-                              Icon(Icons.chat_bubble_rounded, color: Colors.lightGreenAccent, size: 22),
-                              SizedBox(width: 8),
-                              Text(
-                                'WhatsApp Commerce (Order ke Petani)',
-                                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
-                              ),
-                            ],
-                          ),
-                          GestureDetector(
-                            onTap: _showSyncedOrdersModal,
-                            child: const Text(
-                              'Log Order',
-                              style: TextStyle(color: Colors.amberAccent, fontSize: 11, fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 6),
-                      const Text(
-                        'Pesan hasil pertanian & pupuk tanpa komisi. Pesanan terformat rapi dan terhubung langsung ke WhatsApp HP penjual/petani.',
-                        style: TextStyle(color: Colors.white70, fontSize: 11, height: 1.3),
-                      ),
-                      const SizedBox(height: 10),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: SizedBox(
-                              height: 34,
-                              child: ElevatedButton.icon(
-                                onPressed: () {
-                                  WhatsappCommerceService.sendOrderToFarmerWhatsApp(
-                                    farmerPhone: '081234567890',
-                                    farmerName: 'Pak Joko (Petani TaniYuk)',
-                                    orderItems: [
-                                      {'name': 'Tomat Segar', 'qty': 2, 'price': 12000},
-                                      {'name': 'Pupuk Organik', 'qty': 1, 'price': 25000},
-                                    ],
-                                    totalPrice: 49000,
-                                  );
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text('💬 Membuka WhatsApp untuk terhubung langsung dengan Petani!'),
-                                      backgroundColor: Color(0xFF075E54),
-                                    ),
-                                  );
-                                },
-                                icon: const Icon(Icons.chat, size: 16),
-                                label: const Text(
-                                  'Pesan via WhatsApp (Langsung ke Petani)',
-                                  style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
-                                ),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFF25D366),
-                                  foregroundColor: Colors.white,
-                                  elevation: 0,
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-
                 TextField(
                   controller: _searchController,
                   onChanged: (value) => setState(() => _searchQuery = value),
