@@ -14,12 +14,11 @@ class _TipsTrikScreenState extends State<TipsTrikScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: const Color(0xFFFFF4E1),
       appBar: AppBar(
-        backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF1F2937)),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
         title: Column(
@@ -28,14 +27,14 @@ class _TipsTrikScreenState extends State<TipsTrikScreen> {
             Text(
               'Tips & Trik',
               style: TextStyle(
-                color: Color(0xFF1F2937),
+                color: Colors.white,
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
               ),
             ),
             Text(
               'Ilmu baru untuk hasil panen lebih baik',
-              style: TextStyle(color: Color(0xFF6B7280), fontSize: 11),
+              style: TextStyle(color: Colors.white70, fontSize: 11),
             ),
           ],
         ),
@@ -51,7 +50,7 @@ class _TipsTrikScreenState extends State<TipsTrikScreen> {
                 hintText: 'Temukan tips bertani...',
                 hintStyle: const TextStyle(fontSize: 13, color: Colors.grey),
                 prefixIcon: const Icon(Icons.search_rounded, color: Colors.grey),
-                suffixIcon: const Icon(Icons.tune_rounded, color: Color(0xFF0F623F)),
+                suffixIcon: const Icon(Icons.tune_rounded, color: Color(0xFF132E25)),
                 filled: true,
                 fillColor: Colors.white,
                 contentPadding: const EdgeInsets.symmetric(vertical: 10),
@@ -78,7 +77,7 @@ class _TipsTrikScreenState extends State<TipsTrikScreen> {
                     child: ChoiceChip(
                       label: Text(_categories[index]),
                       selected: isSelected,
-                      selectedColor: const Color(0xFF0F623F),
+                      selectedColor: const Color(0xFF132E25),
                       backgroundColor: Colors.white,
                       labelStyle: TextStyle(
                         color: isSelected ? Colors.white : const Color(0xFF4B5563),
@@ -107,7 +106,7 @@ class _TipsTrikScreenState extends State<TipsTrikScreen> {
               padding: const EdgeInsets.all(18),
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
-                  colors: [Color(0xFF0F623F), Color(0xFF166534)],
+                  colors: [Color(0xFF132E25), Color(0xFF428475)],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -171,7 +170,7 @@ class _TipsTrikScreenState extends State<TipsTrikScreen> {
                 ),
                 Text(
                   'Lihat semua',
-                  style: TextStyle(fontSize: 12, color: Color(0xFF0F623F), fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 12, color: Color(0xFF132E25), fontWeight: FontWeight.bold),
                 ),
               ],
             ),
@@ -227,7 +226,7 @@ class _TipsTrikScreenState extends State<TipsTrikScreen> {
               color: color,
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(icon, color: const Color(0xFF0F623F), size: 24),
+            child: Icon(icon, color: const Color(0xFF132E25), size: 24),
           ),
           const SizedBox(width: 14),
           Expanded(

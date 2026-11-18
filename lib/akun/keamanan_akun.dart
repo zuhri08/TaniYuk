@@ -14,18 +14,17 @@ class _KeamananAkunScreenState extends State<KeamananAkunScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: const Color(0xFFFFF4E1),
       appBar: AppBar(
-        backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF1F2937)),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
           'Keamanan Akun',
           style: TextStyle(
-            color: Color(0xFF1F2937),
+            color: Colors.white,
             fontSize: 16,
             fontWeight: FontWeight.bold,
           ),
@@ -43,7 +42,7 @@ class _KeamananAkunScreenState extends State<KeamananAkunScreen> {
             child: Column(
               children: [
                 ListTile(
-                  leading: const Icon(Icons.lock_outline, color: Color(0xFF0F623F)),
+                  leading: const Icon(Icons.lock_outline, color: Color(0xFF132E25)),
                   title: const Text('Ubah Kata Sandi', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
                   trailing: const Icon(Icons.chevron_right_rounded, color: Colors.grey),
                   onTap: () {},
@@ -51,8 +50,8 @@ class _KeamananAkunScreenState extends State<KeamananAkunScreen> {
                 Divider(height: 1, color: Colors.grey.shade200),
                 SwitchListTile(
                   value: _biometricEnabled,
-                  activeTrackColor: const Color(0xFF0F623F),
-                  secondary: const Icon(Icons.fingerprint, color: Color(0xFF0F623F)),
+                  activeTrackColor: const Color(0xFF132E25),
+                  secondary: const Icon(Icons.fingerprint, color: Color(0xFF132E25)),
                   title: const Text('Masuk dengan Sidik Jari / Face ID', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
                   onChanged: (val) {
                     setState(() {
@@ -63,8 +62,8 @@ class _KeamananAkunScreenState extends State<KeamananAkunScreen> {
                 Divider(height: 1, color: Colors.grey.shade200),
                 SwitchListTile(
                   value: _twoFactorEnabled,
-                  activeTrackColor: const Color(0xFF0F623F),
-                  secondary: const Icon(Icons.phonelink_lock, color: Color(0xFF0F623F)),
+                  activeTrackColor: const Color(0xFF132E25),
+                  secondary: const Icon(Icons.phonelink_lock, color: Color(0xFF132E25)),
                   title: const Text('Verifikasi 2 Langkah (2FA)', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
                   onChanged: (val) {
                     setState(() {

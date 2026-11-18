@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'identifikasi_tanaman_screen.dart';
+import '../akun/notifikasi.dart';
 
 class TaniCareScreen extends StatelessWidget {
   const TaniCareScreen({super.key});
@@ -34,8 +35,14 @@ class TaniCareScreen extends StatelessWidget {
         ),
         actions: [
           IconButton(
+            tooltip: 'Notifikasi',
             icon: const Icon(Icons.notifications_none_rounded, color: Colors.white),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const NotifikasiScreen()),
+              );
+            },
           ),
           const SizedBox(width: 8),
         ],

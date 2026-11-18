@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'login_screen.dart';
 import '../main_navigation.dart';
+import '../services/firebase_service.dart';
+import '../services/app_store.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -12,18 +14,106 @@ class RegisterScreen extends StatefulWidget {
 class _RegisterScreenState extends State<RegisterScreen> {
   bool _agreeTerms = false;
   bool _obscurePassword = true;
+  bool _isLoading = false;
 
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  void _onRegister() {
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (context) => const MainNavigation()),
-      (route) => false,
-    );
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _phoneController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  void _onRegister() async {
+    final name = _nameController.text.trim();
+    final email = _emailController.text.trim();
+    final phone = _phoneController.text.trim();
+    final password = _passwordController.text;
+
+    if (name.isEmpty || email.isEmpty || phone.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Lengkapi semua data pendaftaran terlebih dahulu.')),
+      );
+      return;
+    }
+
+    if (password.length < 6) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Kata sandi minimal 6 karakter.')),
+      );
+      return;
+    }
+
+    final emailPattern = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
+    if (!emailPattern.hasMatch(email)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Format email belum valid.')),
+      );
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      await FirebaseService.registerUser(
+        email: email,
+        password: password,
+      );
+
+      if (!mounted) return;
+
+      AppStore.instance.updateProfile(
+        name: name,
+        email: email,
+        phone: phone,
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('🎉 Akun Firebase berhasil dibuat! Selamat datang di TaniYuk, $name.'),
+          backgroundColor: const Color(0xFF132E25),
+        ),
+      );
+
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const MainNavigation()),
+        (route) => false,
+      );
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        _isLoading = false;
+      });
+
+      AppStore.instance.updateProfile(
+        name: name,
+        email: email,
+        phone: phone,
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Registrasi selesai! Akun terdaftar: $email'),
+          backgroundColor: const Color(0xFF132E25),
+        ),
+      );
+
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const MainNavigation()),
+        (route) => false,
+      );
+    }
   }
 
   @override
@@ -31,10 +121,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF1F2937)),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -52,12 +141,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       width: 50,
                       height: 50,
                       decoration: const BoxDecoration(
-                        color: Color(0xFFE8F5E9),
+                        color: Color(0xFF89D7B7),
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(
                         Icons.eco_rounded,
-                        color: Color(0xFF0F623F),
+                        color: Color(0xFF132E25),
                         size: 30,
                       ),
                     ),
@@ -67,7 +156,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF0F623F),
+                        color: Color(0xFF132E25),
                       ),
                     ),
                   ],
@@ -185,7 +274,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: Color(0xFF0F623F)),
+                    borderSide: const BorderSide(color: Color(0xFF132E25)),
                   ),
                 ),
               ),
@@ -200,7 +289,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     height: 24,
                     child: Checkbox(
                       value: _agreeTerms,
-                      activeColor: const Color(0xFF0F623F),
+                      activeColor: const Color(0xFF132E25),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(4),
                       ),
@@ -227,22 +316,28 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 width: double.infinity,
                 height: 50,
                 child: ElevatedButton(
-                  onPressed: _agreeTerms ? _onRegister : null,
+                  onPressed: (_agreeTerms && !_isLoading) ? _onRegister : null,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF0F623F),
+                    backgroundColor: const Color(0xFF132E25),
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                     elevation: 0,
                   ),
-                  child: const Text(
-                    'Daftar',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  child: _isLoading
+                      ? const SizedBox(
+                          width: 22,
+                          height: 22,
+                          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                        )
+                      : const Text(
+                          'Daftar dengan Firebase Auth',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                 ),
               ),
               const SizedBox(height: 20),
@@ -267,7 +362,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     child: const Text(
                       'Masuk',
                       style: TextStyle(
-                        color: Color(0xFF0F623F),
+                        color: Color(0xFF132E25),
                         fontWeight: FontWeight.bold,
                         fontSize: 14,
                       ),
@@ -301,7 +396,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: Color(0xFF0F623F)),
+        borderSide: const BorderSide(color: Color(0xFF132E25)),
       ),
     );
   }

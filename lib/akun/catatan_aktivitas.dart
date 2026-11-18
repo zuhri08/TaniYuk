@@ -65,8 +65,8 @@ class _CatatanAktivitasScreenState extends State<CatatanAktivitasScreen> {
       time: '05 Oktober 2026, 09:00',
       description: 'Hasil panen 45 kg tomat segar kualitas A.',
       tag: 'Panen',
-      tagColor: const Color(0xFFDCFCE7),
-      textColor: const Color(0xFF166534),
+      tagColor: const Color(0xFF89D7B7),
+      textColor: const Color(0xFF428475),
       icon: Icons.eco_outlined,
     ),
   ];
@@ -234,8 +234,8 @@ class _CatatanAktivitasScreenState extends State<CatatanAktivitasScreen> {
                             tagIcon = Icons.bug_report_outlined;
                             break;
                           case 'Panen':
-                            tagBg = const Color(0xFFDCFCE7);
-                            tagTxt = const Color(0xFF166534);
+                            tagBg = const Color(0xFF89D7B7);
+                            tagTxt = const Color(0xFF428475);
                             tagIcon = Icons.eco_outlined;
                             break;
                           default:
@@ -265,12 +265,12 @@ class _CatatanAktivitasScreenState extends State<CatatanAktivitasScreen> {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content: Text('Catatan berhasil ditambahkan!'),
-                            backgroundColor: Color(0xFF0F623F),
+                            backgroundColor: Color(0xFF132E25),
                           ),
                         );
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF0F623F),
+                        backgroundColor: const Color(0xFF132E25),
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -295,12 +295,11 @@ class _CatatanAktivitasScreenState extends State<CatatanAktivitasScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: const Color(0xFFFFF4E1),
       appBar: AppBar(
-        backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF1F2937)),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
         title: Column(
@@ -309,20 +308,20 @@ class _CatatanAktivitasScreenState extends State<CatatanAktivitasScreen> {
             Text(
               'Catatan Pertanian',
               style: TextStyle(
-                color: Color(0xFF1F2937),
+                color: Colors.white,
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
               ),
             ),
             Text(
               'Rekam aktivitas, pantau perkembangan',
-              style: TextStyle(color: Color(0xFF6B7280), fontSize: 11),
+              style: TextStyle(color: Colors.white70, fontSize: 11),
             ),
           ],
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.edit_note_rounded, color: Color(0xFF0F623F)),
+            icon: const Icon(Icons.edit_note_rounded, color: Colors.white),
             tooltip: 'Tambah Catatan',
             onPressed: _showTambahCatatanModal,
           ),
@@ -345,7 +344,7 @@ class _CatatanAktivitasScreenState extends State<CatatanAktivitasScreen> {
                 hintText: 'Cari catatan aktivitas...',
                 hintStyle: const TextStyle(fontSize: 13, color: Colors.grey),
                 prefixIcon: const Icon(Icons.search_rounded, color: Colors.grey),
-                suffixIcon: const Icon(Icons.calendar_month_outlined, color: Color(0xFF0F623F)),
+                suffixIcon: const Icon(Icons.calendar_month_outlined, color: Color(0xFF132E25)),
                 filled: true,
                 fillColor: Colors.white,
                 contentPadding: const EdgeInsets.symmetric(vertical: 10),
@@ -372,7 +371,7 @@ class _CatatanAktivitasScreenState extends State<CatatanAktivitasScreen> {
                     child: ChoiceChip(
                       label: Text(_filters[index]),
                       selected: isSelected,
-                      selectedColor: const Color(0xFF0F623F),
+                      selectedColor: const Color(0xFF132E25),
                       backgroundColor: Colors.white,
                       labelStyle: TextStyle(
                         color: isSelected ? Colors.white : const Color(0xFF4B5563),
@@ -399,7 +398,7 @@ class _CatatanAktivitasScreenState extends State<CatatanAktivitasScreen> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: const Color(0xFFE8F5E9),
+                color: const Color(0xFF89D7B7),
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(color: const Color(0xFFA7F3D0)),
               ),
@@ -408,7 +407,7 @@ class _CatatanAktivitasScreenState extends State<CatatanAktivitasScreen> {
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: const BoxDecoration(
-                      color: Color(0xFF0F623F),
+                      color: Color(0xFF132E25),
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(Icons.task_alt_rounded, color: Colors.white, size: 22),
@@ -423,13 +422,13 @@ class _CatatanAktivitasScreenState extends State<CatatanAktivitasScreen> {
                           style: const TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF0F623F),
+                            color: Color(0xFF132E25),
                           ),
                         ),
                         const SizedBox(height: 2),
                         const Text(
                           'Lahan terawat, hasil panen meningkat.',
-                          style: TextStyle(fontSize: 12, color: Color(0xFF166534)),
+                          style: TextStyle(fontSize: 12, color: Color(0xFF428475)),
                         ),
                       ],
                     ),
@@ -506,7 +505,7 @@ class _CatatanAktivitasScreenState extends State<CatatanAktivitasScreen> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _showTambahCatatanModal,
-        backgroundColor: const Color(0xFF0F623F),
+        backgroundColor: const Color(0xFF132E25),
         icon: const Icon(Icons.add, color: Colors.white),
         label: const Text('Tambah Catatan', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
       ),
@@ -537,7 +536,7 @@ class _CatatanAktivitasScreenState extends State<CatatanAktivitasScreen> {
             children: [
               Row(
                 children: [
-                  Icon(icon, color: const Color(0xFF0F623F), size: 20),
+                  Icon(icon, color: const Color(0xFF132E25), size: 20),
                   const SizedBox(width: 8),
                   Text(
                     title,

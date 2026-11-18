@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/app_store.dart';
 
 class KelolaProfilScreen extends StatefulWidget {
   const KelolaProfilScreen({super.key});
@@ -8,26 +9,84 @@ class KelolaProfilScreen extends StatefulWidget {
 }
 
 class _KelolaProfilScreenState extends State<KelolaProfilScreen> {
-  final TextEditingController _nameController = TextEditingController(text: 'Budi Santoso');
-  final TextEditingController _emailController = TextEditingController(text: 'budi.santoso@email.com');
-  final TextEditingController _phoneController = TextEditingController(text: '081234567890');
-  final TextEditingController _locationController = TextEditingController(text: 'Bandung, Jawa Barat');
+  late final TextEditingController _nameController;
+  late final TextEditingController _emailController;
+  late final TextEditingController _phoneController;
+  late final TextEditingController _locationController;
+
+  @override
+  void initState() {
+    super.initState();
+    final profile = AppStore.instance.profile;
+    _nameController = TextEditingController(text: profile.name);
+    _emailController = TextEditingController(text: profile.email);
+    _phoneController = TextEditingController(text: profile.phone);
+    _locationController = TextEditingController(text: profile.location);
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _phoneController.dispose();
+    _locationController.dispose();
+    super.dispose();
+  }
+
+  void _saveProfile() {
+    final name = _nameController.text.trim();
+    final email = _emailController.text.trim();
+    final phone = _phoneController.text.trim();
+    final location = _locationController.text.trim();
+
+    if (name.isEmpty || email.isEmpty || phone.isEmpty || location.isEmpty) {
+      _showMessage('Semua kolom profil wajib diisi.');
+      return;
+    }
+
+    final emailPattern = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
+    if (!emailPattern.hasMatch(email)) {
+      _showMessage('Format email belum valid.');
+      return;
+    }
+
+    final phonePattern = RegExp(r'^[0-9+]{9,15}$');
+    if (!phonePattern.hasMatch(phone.replaceAll(RegExp(r'[\s-]'), ''))) {
+      _showMessage('Nomor HP harus 9-15 digit angka.');
+      return;
+    }
+
+    AppStore.instance.updateProfile(
+      name: name,
+      email: email,
+      phone: phone,
+      location: location,
+    );
+
+    _showMessage('Profil berhasil diperbarui.');
+    Navigator.pop(context);
+  }
+
+  void _showMessage(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: const Color(0xFFFFF4E1),
       appBar: AppBar(
-        backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF1F2937)),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
           'Kelola Profil',
           style: TextStyle(
-            color: Color(0xFF1F2937),
+            color: Colors.white,
             fontSize: 16,
             fontWeight: FontWeight.bold,
           ),
@@ -45,11 +104,11 @@ class _KelolaProfilScreenState extends State<KelolaProfilScreen> {
                     width: 90,
                     height: 90,
                     decoration: const BoxDecoration(
-                      color: Color(0xFFE8F5E9),
+                      color: Color(0xFF89D7B7),
                       shape: BoxShape.circle,
                     ),
                     child: const Center(
-                      child: Icon(Icons.person, color: Color(0xFF0F623F), size: 50),
+                      child: Icon(Icons.person, color: Color(0xFF132E25), size: 50),
                     ),
                   ),
                   Positioned(
@@ -58,7 +117,7 @@ class _KelolaProfilScreenState extends State<KelolaProfilScreen> {
                     child: Container(
                       padding: const EdgeInsets.all(6),
                       decoration: const BoxDecoration(
-                        color: Color(0xFF0F623F),
+                        color: Color(0xFF132E25),
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(Icons.camera_alt, color: Colors.white, size: 16),
@@ -77,12 +136,12 @@ class _KelolaProfilScreenState extends State<KelolaProfilScreen> {
 
             _fieldLabel('Email'),
             const SizedBox(height: 6),
-            _textField(_emailController, Icons.email_outlined),
+            _textField(_emailController, Icons.email_outlined, keyboardType: TextInputType.emailAddress),
             const SizedBox(height: 16),
 
             _fieldLabel('Nomor HP'),
             const SizedBox(height: 6),
-            _textField(_phoneController, Icons.phone_outlined),
+            _textField(_phoneController, Icons.phone_outlined, keyboardType: TextInputType.phone),
             const SizedBox(height: 16),
 
             _fieldLabel('Lokasi'),
@@ -95,14 +154,9 @@ class _KelolaProfilScreenState extends State<KelolaProfilScreen> {
               width: double.infinity,
               height: 50,
               child: ElevatedButton(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Profil berhasil diperbarui')),
-                  );
-                  Navigator.pop(context);
-                },
+                onPressed: _saveProfile,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF0F623F),
+                  backgroundColor: const Color(0xFF132E25),
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -135,9 +189,14 @@ class _KelolaProfilScreenState extends State<KelolaProfilScreen> {
     );
   }
 
-  Widget _textField(TextEditingController controller, IconData icon) {
+  Widget _textField(
+    TextEditingController controller,
+    IconData icon, {
+    TextInputType? keyboardType,
+  }) {
     return TextField(
       controller: controller,
+      keyboardType: keyboardType,
       decoration: InputDecoration(
         prefixIcon: Icon(icon, color: Colors.grey),
         filled: true,

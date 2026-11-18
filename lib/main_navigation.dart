@@ -48,7 +48,7 @@ class _MainNavigationState extends State<MainNavigation> {
       ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: const Color(0xFF2C5E4A),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.06),
@@ -61,9 +61,9 @@ class _MainNavigationState extends State<MainNavigation> {
           currentIndex: _currentIndex,
           onTap: _onTabTapped,
           type: BottomNavigationBarType.fixed,
-          backgroundColor: Colors.white,
-          selectedItemColor: const Color(0xFF0F623F),
-          unselectedItemColor: const Color(0xFF9CA3AF),
+          backgroundColor: Colors.transparent,
+          selectedItemColor: Colors.white,
+          unselectedItemColor: const Color(0xFF89D7B7),
           selectedFontSize: 11,
           unselectedFontSize: 11,
           selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),

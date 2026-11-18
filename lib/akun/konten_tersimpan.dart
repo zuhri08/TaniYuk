@@ -6,18 +6,17 @@ class KontenTersimpanScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: const Color(0xFFFFF4E1),
       appBar: AppBar(
-        backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF1F2937)),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
           'Konten Tersimpan',
           style: TextStyle(
-            color: Color(0xFF1F2937),
+            color: Colors.white,
             fontSize: 16,
             fontWeight: FontWeight.bold,
           ),
@@ -65,10 +64,10 @@ class KontenTersimpanScreen extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: const BoxDecoration(
-              color: Color(0xFFE8F5E9),
+              color: Color(0xFF89D7B7),
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.bookmark_rounded, color: Color(0xFF0F623F), size: 22),
+            child: const Icon(Icons.bookmark_rounded, color: Color(0xFF132E25), size: 22),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -77,7 +76,7 @@ class KontenTersimpanScreen extends StatelessWidget {
               children: [
                 Text(
                   category,
-                  style: const TextStyle(fontSize: 11, color: Color(0xFF0F623F), fontWeight: FontWeight.bold),
+                  style: const TextStyle(fontSize: 11, color: Color(0xFF132E25), fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 2),
                 Text(

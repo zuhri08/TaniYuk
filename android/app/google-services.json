@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "401891419702",
+    "project_id": "taniyuk-dd4d2",
+    "storage_bucket": "taniyuk-dd4d2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:401891419702:android:cacdfbc5b145a6a84b5a97",
+        "android_client_info": {
+          "package_name": "com.TaniYuk"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "401891419702-3d4oneq458g7doua0n610kpjjeui3rm4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDcI_wP5WddNVwZ2UXiCfBayXcumciHOoM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "401891419702-3d4oneq458g7doua0n610kpjjeui3rm4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

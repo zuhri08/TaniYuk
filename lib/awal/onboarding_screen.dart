@@ -4,14 +4,16 @@ import 'login_screen.dart';
 class OnboardingItem {
   final String title;
   final String description;
-  final IconData icon;
-  final Color iconBgColor;
+  final String imageUrl;
+  final String badgeText;
+  final IconData badgeIcon;
 
   OnboardingItem({
     required this.title,
     required this.description,
-    required this.icon,
-    required this.iconBgColor,
+    required this.imageUrl,
+    required this.badgeText,
+    required this.badgeIcon,
   });
 }
 
@@ -28,32 +30,36 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   final List<OnboardingItem> _pages = [
     OnboardingItem(
-      title: 'Peluang Tanam\nTerbaik untukmu',
+      title: 'Panen Lebih Melimpah',
       description:
-          'Temukan tanaman yang paling cocok untuk lahanmu. Rencanakan musim tanam dengan rekomendasi cuaca dan harga pasar.',
-      icon: Icons.agriculture_rounded,
-      iconBgColor: const Color(0xFFE8F5E9),
+          'Pantau kondisi cuaca presisi dan pergerakan harga komoditas pasar terkini untuk hasil pertanian optimal.',
+      imageUrl: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800',
+      badgeText: 'Prakiraan Cuaca & Harga Pasar',
+      badgeIcon: Icons.wb_sunny_outlined,
     ),
     OnboardingItem(
-      title: 'Kenali Musuh\nTanaman dengan AI',
+      title: 'Solusi Kesehatan Tanaman',
       description:
-          'Kenali penyakit tanaman hanya dengan satu foto. Dapatkan solusi perawatan yang tepat agar tanamanmu tetap sehat.',
-      icon: Icons.qr_code_scanner_rounded,
-      iconBgColor: const Color(0xFFE0F2FE),
+          'Kenali hama dan diagnosa penyakit tanaman cukup dengan foto dari HP-mu. Dapatkan langkah perawatan cepat dan efektif.',
+      imageUrl: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=800',
+      badgeText: 'Deteksi Penyakit Tanaman',
+      badgeIcon: Icons.qr_code_scanner_rounded,
     ),
     OnboardingItem(
-      title: 'Terhubung dengan\nPetani Lain',
+      title: 'Pasar & Komunitas Tani',
       description:
-          'Berbagi pengalaman, bertanya, dan belajar bersama komunitas petani. Karena tumbuh bersama selalu lebih mudah.',
-      icon: Icons.groups_rounded,
-      iconBgColor: const Color(0xFFFEF3C7),
+          'Terhubung dengan sesama petani, bagikan pengalaman di forum, dan jual hasil panen langsung ke HP pembeli.',
+      imageUrl: 'https://images.unsplash.com/photo-1595974482597-4b8da8879bc5?w=800',
+      badgeText: 'Komunitas & WhatsApp Commerce',
+      badgeIcon: Icons.groups_outlined,
     ),
     OnboardingItem(
-      title: 'Kelola Keuangan\nPertanianmu',
+      title: 'Keuangan Tani Terencana',
       description:
-          'Catat pemasukan dan pengeluaran dengan mudah. Pantau keuntungan setiap panen untuk usaha tani yang lebih terencana.',
-      icon: Icons.account_balance_wallet_rounded,
-      iconBgColor: const Color(0xFFDCFCE7),
+          'Catat pemasukan dan pengeluaran usaha tanimu dengan mudah. Pantau keuntungan bulanan serta cetak laporan resmi kapan saja.',
+      imageUrl: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=800',
+      badgeText: 'Rekap Keuangan & Laporan PDF',
+      badgeIcon: Icons.account_balance_wallet_outlined,
     ),
   ];
 
@@ -67,7 +73,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFFFF4E1),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -77,9 +83,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             child: const Text(
               'Lewati',
               style: TextStyle(
-                color: Colors.grey,
+                color: Color(0xFF132E25),
                 fontSize: 14,
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.bold,
               ),
             ),
           ),
@@ -101,25 +107,102 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 itemBuilder: (context, index) {
                   final item = _pages[index];
                   return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 28.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 24.0),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        // Illustration Circle Container
+                        // Hero Graphic Card with Real High-Definition Photo & Gradient Overlay
                         Container(
-                          width: 180,
-                          height: 180,
+                          width: double.infinity,
+                          height: 250,
                           decoration: BoxDecoration(
-                            color: item.iconBgColor,
-                            shape: BoxShape.circle,
+                            borderRadius: BorderRadius.circular(24),
+                            boxShadow: const [
+                              BoxShadow(
+                                color: Colors.black12,
+                                blurRadius: 12,
+                                offset: Offset(0, 4),
+                              ),
+                            ],
                           ),
-                          child: Icon(
-                            item.icon,
-                            size: 90,
-                            color: const Color(0xFF0F623F),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(24),
+                            child: Stack(
+                              children: [
+                                Image.network(
+                                  item.imageUrl,
+                                  width: double.infinity,
+                                  height: double.infinity,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) => Container(
+                                    decoration: const BoxDecoration(
+                                      gradient: LinearGradient(
+                                        colors: [Color(0xFF132E25), Color(0xFF2C5E4A)],
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                      ),
+                                    ),
+                                    child: Center(
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Icon(item.badgeIcon, size: 54, color: Colors.lightGreenAccent),
+                                          const SizedBox(height: 8),
+                                          Text(
+                                            item.badgeText,
+                                            style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      begin: Alignment.topCenter,
+                                      end: Alignment.bottomCenter,
+                                      colors: [
+                                        Colors.transparent,
+                                        Colors.black.withValues(alpha: 0.7),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                Positioned(
+                                  bottom: 16,
+                                  left: 16,
+                                  right: 16,
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white.withValues(alpha: 0.9),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(item.badgeIcon, size: 16, color: const Color(0xFF132E25)),
+                                        const SizedBox(width: 8),
+                                        Expanded(
+                                          child: Text(
+                                            item.badgeText,
+                                            style: const TextStyle(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.bold,
+                                              color: Color(0xFF132E25),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                        const SizedBox(height: 40),
+                        const SizedBox(height: 32),
                         Text(
                           item.title,
                           textAlign: TextAlign.center,
@@ -130,13 +213,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             height: 1.3,
                           ),
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 12),
                         Text(
                           item.description,
                           textAlign: TextAlign.center,
                           style: const TextStyle(
                             fontSize: 14,
-                            color: Color(0xFF6B7280),
+                            color: Color(0xFF4B5563),
                             height: 1.5,
                           ),
                         ),
@@ -159,14 +242,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   height: 8,
                   decoration: BoxDecoration(
                     color: _currentIndex == index
-                        ? const Color(0xFF0F623F)
+                        ? const Color(0xFF132E25)
                         : Colors.grey.shade300,
                     borderRadius: BorderRadius.circular(4),
                   ),
                 ),
               ),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 24),
 
             // Button
             Padding(
@@ -186,26 +269,33 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF0F623F),
+                    backgroundColor: const Color(0xFF132E25),
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(26),
+                      borderRadius: BorderRadius.circular(16),
                     ),
-                    elevation: 0,
+                    elevation: 2,
                   ),
-                  child: Text(
-                    _currentIndex == _pages.length - 1
-                        ? 'Mulai Sekarang'
-                        : 'Lanjut',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        _currentIndex == _pages.length - 1
+                            ? 'Mulai Sekarang'
+                            : 'Lanjut',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      const Icon(Icons.arrow_forward_rounded, size: 20),
+                    ],
                   ),
                 ),
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 8),
           ],
         ),
       ),

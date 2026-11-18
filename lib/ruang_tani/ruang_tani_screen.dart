@@ -3,38 +3,8 @@ import 'tips_trik_screen.dart';
 import '../util/permission_helper.dart';
 import '../util/media_picker_service.dart';
 import '../util/live_camera_dialog.dart';
-
-class RuangTaniPost {
-  final String id;
-  final String userName;
-  final String userLocation;
-  final String timeText;
-  final String postText;
-  final String? attachedImageLabel;
-  final String? imageUrl;
-  final Color imageColor;
-  final String category;
-  int likeCount;
-  bool isLiked;
-  int commentCount;
-  List<String> comments;
-
-  RuangTaniPost({
-    required this.id,
-    required this.userName,
-    required this.userLocation,
-    required this.timeText,
-    required this.postText,
-    this.attachedImageLabel,
-    this.imageUrl,
-    required this.imageColor,
-    required this.category,
-    required this.likeCount,
-    this.isLiked = false,
-    required this.commentCount,
-    required this.comments,
-  });
-}
+import '../akun/notifikasi.dart';
+import '../services/ruang_tani_service.dart';
 
 class RuangTaniScreen extends StatefulWidget {
   const RuangTaniScreen({super.key});
@@ -48,78 +18,18 @@ class _RuangTaniScreenState extends State<RuangTaniScreen> {
   final List<String> _categories = ['Semua', 'Diskusi', 'Tips', 'Panen'];
   String _searchQuery = '';
 
-  final List<RuangTaniPost> _postsList = [
-    RuangTaniPost(
-      id: '1',
-      userName: 'Pak Joko',
-      userLocation: 'Bandung',
-      timeText: '2 jam lalu',
-      postText:
-          'Alhamdulillah, padi tumbuh subur! Ada yang punya tips supaya hasil panen makin maksimal?',
-      attachedImageLabel: '🌾 Lahan Padi Subur - Bandung',
-      imageColor: const Color(0xFFDCFCE7),
-      category: 'Diskusi',
-      likeCount: 34,
-      isLiked: false,
-      commentCount: 8,
-      comments: [
-        'Bu Siti: Gunakan pupuk organik cair di minggu ke-4 pak!',
-        'Tani Muda: Pastikan irigasi lancar sebelum pemupukan.',
-      ],
-    ),
-    RuangTaniPost(
-      id: '2',
-      userName: 'Bu Siti',
-      userLocation: 'Lembang',
-      timeText: '5 jam lalu',
-      postText:
-          'Panen tomat pertama musim ini. Segar dan siap dipasarkan ke Pasar Tani!',
-      attachedImageLabel: '🍅 Hasil Panen Tomat Segar',
-      imageColor: const Color(0xFFFEE2E2),
-      category: 'Panen',
-      likeCount: 42,
-      isLiked: true,
-      commentCount: 12,
-      comments: [
-        'Pak Joko: MasyaAllah hasilnya bagus sekali Bu Siti!',
-        'Budi Santoso: Berapa harga per kg sekarang bu?',
-      ],
-    ),
-    RuangTaniPost(
-      id: '3',
-      userName: 'Tani Muda',
-      userLocation: 'Garut',
-      timeText: '1 hari lalu',
-      postText:
-          'Sharing pengalaman bikin pupuk kompos sendiri dari limbah jerami. Lebih hemat dan hasil tanah lebih gembur!',
-      attachedImageLabel: '🍃 Pembuatan Pupuk Kompos',
-      imageColor: const Color(0xFFFEF3C7),
-      category: 'Tips',
-      likeCount: 56,
-      isLiked: false,
-      commentCount: 19,
-      comments: [
-        'Pak Joko: Mantap mas, hemat biaya operasional lahan.',
-      ],
-    ),
-  ];
-
   List<RuangTaniPost> get _filteredPosts {
-    return _postsList.where((post) {
-      final categoryFilter = _categories[_selectedChip];
-      final matchesCategory = categoryFilter == 'Semua' || post.category == categoryFilter;
-      final matchesSearch = _searchQuery.isEmpty ||
-          post.postText.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-          post.userName.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-          post.userLocation.toLowerCase().contains(_searchQuery.toLowerCase());
-      return matchesCategory && matchesSearch;
-    }).toList();
+    final categoryFilter = _categories[_selectedChip];
+    return RuangTaniService.getPosts(category: categoryFilter, searchQuery: _searchQuery);
   }
 
   void _showCreatePostBottomSheet(BuildContext context) {
+    final pageContext = context;
+    final messenger = ScaffoldMessenger.of(context);
     final textController = TextEditingController();
     PickedMediaResult? attachedMedia;
-    String attachedLocation = 'Surabaya';
+    String attachedLocation = 'Bandung';
+    String selectedCategory = 'Diskusi';
 
     showModalBottomSheet(
       context: context,
@@ -179,7 +89,7 @@ class _RuangTaniScreenState extends State<RuangTaniScreen> {
                       margin: const EdgeInsets.only(bottom: 8),
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFDCFCE7),
+                        color: const Color(0xFF89D7B7),
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(color: const Color(0xFFA7F3D0)),
                       ),
@@ -193,11 +103,11 @@ class _RuangTaniScreenState extends State<RuangTaniScreen> {
                                 width: 42,
                                 height: 42,
                                 fit: BoxFit.cover,
-                                errorBuilder: (c, e, s) => const Icon(Icons.image, color: Color(0xFF15803D)),
+                                errorBuilder: (c, e, s) => const Icon(Icons.image, color: Color(0xFF428475)),
                               ),
                             )
                           else
-                            const Icon(Icons.image_rounded, size: 24, color: Color(0xFF15803D)),
+                            const Icon(Icons.image_rounded, size: 24, color: Color(0xFF428475)),
                           const SizedBox(width: 10),
                           Expanded(
                             child: Column(
@@ -205,7 +115,7 @@ class _RuangTaniScreenState extends State<RuangTaniScreen> {
                               children: [
                                 const Text(
                                   'Foto Terlampir',
-                                  style: TextStyle(fontSize: 11, color: Color(0xFF15803D), fontWeight: FontWeight.bold),
+                                  style: TextStyle(fontSize: 11, color: Color(0xFF428475), fontWeight: FontWeight.bold),
                                 ),
                                 Text(
                                   attachedMedia!.fileName,
@@ -217,7 +127,7 @@ class _RuangTaniScreenState extends State<RuangTaniScreen> {
                             ),
                           ),
                           IconButton(
-                            icon: const Icon(Icons.close_rounded, size: 18, color: Color(0xFF15803D)),
+                            icon: const Icon(Icons.close_rounded, size: 18, color: Color(0xFF428475)),
                             onPressed: () => setModalState(() => attachedMedia = null),
                           ),
                         ],
@@ -245,15 +155,42 @@ class _RuangTaniScreenState extends State<RuangTaniScreen> {
                     ),
                   ),
 
+                  // Kategori postingan
+                  const Text(
+                    'Kategori',
+                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF374151)),
+                  ),
+                  const SizedBox(height: 6),
+                  Wrap(
+                    spacing: 8,
+                    children: ['Diskusi', 'Tips', 'Panen'].map((category) {
+                      final isSelected = selectedCategory == category;
+                      return ChoiceChip(
+                        label: Text(category),
+                        selected: isSelected,
+                        selectedColor: const Color(0xFF132E25),
+                        backgroundColor: Colors.white,
+                        labelStyle: TextStyle(
+                          fontSize: 12,
+                          color: isSelected ? Colors.white : const Color(0xFF4B5563),
+                          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                        ),
+                        side: BorderSide(color: Colors.grey.shade300),
+                        onSelected: (_) => setModalState(() => selectedCategory = category),
+                      );
+                    }).toList(),
+                  ),
+                  const SizedBox(height: 12),
+
                   // Action Buttons Row
                   Row(
                     children: [
                       // Camera/Gallery Attach Button
                       IconButton(
-                        icon: const Icon(Icons.photo_camera_outlined, color: Color(0xFF0F623F), size: 24),
+                        icon: const Icon(Icons.photo_camera_outlined, color: Color(0xFF132E25), size: 24),
                         tooltip: 'Lampirkan Foto',
                         onPressed: () {
-                          _showPhotoSourceSelection(context, (selectedMedia) {
+                          _showPhotoSourceSelection(pageContext, (selectedMedia) {
                             setModalState(() {
                               attachedMedia = selectedMedia;
                             });
@@ -262,13 +199,13 @@ class _RuangTaniScreenState extends State<RuangTaniScreen> {
                       ),
                       // Location Pin Button
                       IconButton(
-                        icon: const Icon(Icons.location_on_outlined, color: Color(0xFF0F623F), size: 24),
+                        icon: const Icon(Icons.location_on_outlined, color: Color(0xFF132E25), size: 24),
                         tooltip: 'Sematkan Lokasi GPS',
                         onPressed: () {
                           setModalState(() {
-                            attachedLocation = 'Surabaya (GPS Terdeteksi)';
+                            attachedLocation = 'Bandung (GPS Terdeteksi)';
                           });
-                          ScaffoldMessenger.of(context).showSnackBar(
+                          messenger.showSnackBar(
                             const SnackBar(content: Text('Lokasi GPS berhasil disematkan!')),
                           );
                         },
@@ -280,30 +217,21 @@ class _RuangTaniScreenState extends State<RuangTaniScreen> {
                         onPressed: () {
                           final text = textController.text.trim();
                           if (text.isEmpty && attachedMedia == null) {
-                            ScaffoldMessenger.of(context).showSnackBar(
+                            messenger.showSnackBar(
                               const SnackBar(content: Text('Ketik cerita atau lampirkan foto terlebih dahulu!')),
                             );
                             return;
                           }
 
                           setState(() {
-                            _postsList.insert(
-                              0,
-                              RuangTaniPost(
-                                id: DateTime.now().millisecondsSinceEpoch.toString(),
-                                userName: 'Budi Santoso',
-                                userLocation: attachedLocation,
-                                timeText: 'Baru saja',
-                                postText: text.isNotEmpty ? text : 'Membagikan foto kegiatan pertanian.',
-                                attachedImageLabel: attachedMedia?.fileName ?? '🌱 Foto Lahan Pertanian',
-                                imageUrl: attachedMedia?.objectUrl,
-                                imageColor: const Color(0xFFDCFCE7),
-                                category: 'Diskusi',
-                                likeCount: 0,
-                                isLiked: false,
-                                commentCount: 0,
-                                comments: [],
-                              ),
+                            RuangTaniService.createPost(
+                              userName: 'Budi Santoso',
+                              userLocation: attachedLocation,
+                              postText: text.isNotEmpty ? text : 'Membagikan foto kegiatan pertanian.',
+                              attachedImageLabel: attachedMedia?.fileName,
+                              imageUrl: attachedMedia?.objectUrl,
+                              attachedBytes: attachedMedia?.bytes,
+                              category: selectedCategory,
                             );
                           });
 
@@ -314,15 +242,15 @@ class _RuangTaniScreenState extends State<RuangTaniScreen> {
                             body: 'Postingan Anda berhasil dibagikan kepada petani lainnya!',
                           );
 
-                          ScaffoldMessenger.of(context).showSnackBar(
+                          messenger.showSnackBar(
                             const SnackBar(
                               content: Text('Postingan berhasil dibagikan di Ruang Tani!'),
-                              backgroundColor: Color(0xFF0F623F),
+                              backgroundColor: Color(0xFF132E25),
                             ),
                           );
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF0F623F),
+                          backgroundColor: const Color(0xFF132E25),
                           foregroundColor: Colors.white,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
@@ -342,6 +270,7 @@ class _RuangTaniScreenState extends State<RuangTaniScreen> {
   }
 
   void _showPhotoSourceSelection(BuildContext context, Function(PickedMediaResult) onPhotoSelected) {
+    final pageContext = context;
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -374,20 +303,20 @@ class _RuangTaniScreenState extends State<RuangTaniScreen> {
                 leading: Container(
                   padding: const EdgeInsets.all(10),
                   decoration: const BoxDecoration(
-                    color: Color(0xFFE8F5E9),
+                    color: Color(0xFF89D7B7),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.camera_alt_rounded, color: Color(0xFF0F623F)),
+                  child: const Icon(Icons.camera_alt_rounded, color: Color(0xFF132E25)),
                 ),
                 title: const Text('Ambil Foto (Kamera Live)', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
                 subtitle: const Text('Gunakan kamera HP untuk memotret secara langsung', style: TextStyle(fontSize: 12, color: Colors.grey)),
                 onTap: () {
                   Navigator.pop(context);
                   PermissionHelper.requestCameraPermission(
-                    context,
+                    pageContext,
                     onGranted: () async {
                       final pickedMedia = await showModalBottomSheet<PickedMediaResult>(
-                        context: context,
+                        context: pageContext,
                         isScrollControlled: true,
                         backgroundColor: Colors.transparent,
                         builder: (context) => const LiveCameraDialog(),
@@ -416,7 +345,7 @@ class _RuangTaniScreenState extends State<RuangTaniScreen> {
                 onTap: () {
                   Navigator.pop(context);
                   PermissionHelper.requestGalleryPermission(
-                    context,
+                    pageContext,
                     onGranted: () async {
                       final media = await MediaPickerService.pickImageFromGallery();
                       if (media != null) {
@@ -526,17 +455,14 @@ class _RuangTaniScreenState extends State<RuangTaniScreen> {
                       ),
                       const SizedBox(width: 8),
                       IconButton(
-                        icon: const Icon(Icons.send_rounded, color: Color(0xFF0F623F)),
+                        icon: const Icon(Icons.send_rounded, color: Color(0xFF132E25)),
                         onPressed: () {
                           final cText = commentController.text.trim();
                           if (cText.isNotEmpty) {
-                            setState(() {
-                              post.comments.add('Budi Santoso: $cText');
-                              post.commentCount++;
-                            });
-                            setModalState(() {
-                              commentController.clear();
-                            });
+                            RuangTaniService.addComment(post.id, 'Budi Santoso', cText);
+                            commentController.clear();
+                            setModalState(() {});
+                            setState(() {});
                           }
                         },
                       ),
@@ -554,9 +480,8 @@ class _RuangTaniScreenState extends State<RuangTaniScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: const Color(0xFFFFF4E1),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF0F623F),
         elevation: 0,
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -591,8 +516,14 @@ class _RuangTaniScreenState extends State<RuangTaniScreen> {
             },
           ),
           IconButton(
+            tooltip: 'Notifikasi',
             icon: const Icon(Icons.notifications_none_rounded, color: Colors.white),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const NotifikasiScreen()),
+              );
+            },
           ),
           const SizedBox(width: 8),
         ],
@@ -616,7 +547,7 @@ class _RuangTaniScreenState extends State<RuangTaniScreen> {
                     hintText: 'Cari cerita, tips, atau petani...',
                     hintStyle: const TextStyle(fontSize: 13, color: Colors.grey),
                     prefixIcon: const Icon(Icons.search_rounded, color: Colors.grey),
-                    suffixIcon: const Icon(Icons.tune_rounded, color: Color(0xFF0F623F)),
+                    suffixIcon: const Icon(Icons.tune_rounded, color: Color(0xFF132E25)),
                     filled: true,
                     fillColor: const Color(0xFFF3F4F6),
                     contentPadding: const EdgeInsets.symmetric(vertical: 10),
@@ -639,7 +570,7 @@ class _RuangTaniScreenState extends State<RuangTaniScreen> {
                         child: ChoiceChip(
                           label: Text(_categories[index]),
                           selected: isSelected,
-                          selectedColor: const Color(0xFF0F623F),
+                          selectedColor: const Color(0xFF132E25),
                           backgroundColor: Colors.grey.shade100,
                           labelStyle: TextStyle(
                             color: isSelected ? Colors.white : const Color(0xFF4B5563),
@@ -691,7 +622,7 @@ class _RuangTaniScreenState extends State<RuangTaniScreen> {
         onPressed: () {
           _showCreatePostBottomSheet(context);
         },
-        backgroundColor: const Color(0xFF0F623F),
+        backgroundColor: const Color(0xFF132E25),
         child: const Icon(Icons.add, color: Colors.white, size: 28),
       ),
     );
@@ -712,7 +643,7 @@ class _RuangTaniScreenState extends State<RuangTaniScreen> {
           Row(
             children: [
               CircleAvatar(
-                backgroundColor: const Color(0xFF0F623F),
+                backgroundColor: const Color(0xFF132E25),
                 child: Text(
                   post.userName.substring(0, 1),
                   style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
@@ -741,12 +672,12 @@ class _RuangTaniScreenState extends State<RuangTaniScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFDCFCE7),
+                  color: const Color(0xFF89D7B7),
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Text(
                   post.category,
-                  style: const TextStyle(fontSize: 10, color: Color(0xFF15803D), fontWeight: FontWeight.bold),
+                  style: const TextStyle(fontSize: 10, color: Color(0xFF428475), fontWeight: FontWeight.bold),
                 ),
               ),
             ],
@@ -765,7 +696,20 @@ class _RuangTaniScreenState extends State<RuangTaniScreen> {
           const SizedBox(height: 12),
 
           // REAL Image Picture Container
-          if (post.imageUrl != null && post.imageUrl!.isNotEmpty)
+          if (post.attachedBytes != null)
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Container(
+                width: double.infinity,
+                height: 200,
+                color: post.imageColor,
+                child: Image.memory(
+                  post.attachedBytes!,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            )
+          else if (post.imageUrl != null && post.imageUrl!.isNotEmpty)
             ClipRRect(
               borderRadius: BorderRadius.circular(12),
               child: Container(
@@ -797,7 +741,7 @@ class _RuangTaniScreenState extends State<RuangTaniScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.image_rounded, color: Color(0xFF0F623F), size: 28),
+                      const Icon(Icons.image_rounded, color: Color(0xFF132E25), size: 28),
                       const SizedBox(width: 8),
                       Text(
                         post.attachedImageLabel!,
@@ -821,12 +765,7 @@ class _RuangTaniScreenState extends State<RuangTaniScreen> {
               GestureDetector(
                 onTap: () {
                   setState(() {
-                    post.isLiked = !post.isLiked;
-                    if (post.isLiked) {
-                      post.likeCount++;
-                    } else {
-                      post.likeCount--;
-                    }
+                    RuangTaniService.toggleLike(post.id);
                   });
                 },
                 child: Row(

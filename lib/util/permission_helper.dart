@@ -6,7 +6,9 @@ class PermissionHelper {
   static bool isCameraGranted = false;
   static bool isGalleryGranted = false;
 
-  /// Requests Notification Permission with System Dialog UI
+  /// Requests Notification Permission with System Dialog UI.
+  /// Dialog ditampilkan saat izin belum dicatat; aksi "Izinkan" akan
+  /// meminta izin notifikasi sistem (web Notification API bila tersedia).
   static void requestNotificationPermission(
     BuildContext context, {
     VoidCallback? onGranted,
@@ -31,12 +33,12 @@ class PermissionHelper {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: const BoxDecoration(
-                    color: Color(0xFFDCFCE7),
+                    color: Color(0xFF89D7B7),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
                     Icons.notifications_active_rounded,
-                    color: Color(0xFF0F623F),
+                    color: Color(0xFF132E25),
                     size: 38,
                   ),
                 ),
@@ -65,7 +67,7 @@ class PermissionHelper {
                       Navigator.pop(dialogContext);
                       if (onGranted != null) onGranted();
 
-                      // Trigger REAL Device Top Status Bar Notification
+                      // Meminta izin/menampilkan notifikasi sistem bila tersedia.
                       MediaPickerService.sendSystemNotification(
                         title: '🔔 TaniYuk Notifikasi Status Bar',
                         body: 'Izin notifikasi aktif! Anda akan menerima update cuaca & harga pasar secara realtime.',
@@ -74,7 +76,7 @@ class PermissionHelper {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           behavior: SnackBarBehavior.floating,
-                          backgroundColor: const Color(0xFF0F623F),
+                          backgroundColor: const Color(0xFF132E25),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                           content: Row(
                             children: const [
@@ -82,7 +84,7 @@ class PermissionHelper {
                               SizedBox(width: 10),
                               Expanded(
                                 child: Text(
-                                  'Izin notifikasi diberikan! Notifikasi sistem dikirim ke bilah atas HP.',
+                                  'Notifikasi diaktifkan. Izinkan juga di pengaturan browser bila diminta.',
                                   style: TextStyle(fontSize: 13, color: Colors.white),
                                 ),
                               ),
@@ -96,7 +98,7 @@ class PermissionHelper {
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF0F623F),
+                        color: Color(0xFF132E25),
                       ),
                     ),
                   ),
@@ -115,7 +117,7 @@ class PermissionHelper {
                       'Jangan izinkan',
                       style: TextStyle(
                         fontSize: 15,
-                        color: Color(0xFF0F623F),
+                        color: Color(0xFF132E25),
                       ),
                     ),
                   ),
@@ -152,12 +154,12 @@ class PermissionHelper {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: const BoxDecoration(
-                    color: Color(0xFFE8F5E9),
+                    color: Color(0xFF89D7B7),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
                     Icons.camera_alt_rounded,
-                    color: Color(0xFF0F623F),
+                    color: Color(0xFF132E25),
                     size: 38,
                   ),
                 ),
@@ -188,7 +190,7 @@ class PermissionHelper {
                     },
                     child: const Text(
                       'Saat aplikasi digunakan',
-                      style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF0F623F)),
+                      style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF132E25)),
                     ),
                   ),
                 ),
@@ -203,7 +205,7 @@ class PermissionHelper {
                     },
                     child: const Text(
                       'Hanya kali ini',
-                      style: TextStyle(fontSize: 15, color: Color(0xFF0F623F)),
+                      style: TextStyle(fontSize: 15, color: Color(0xFF132E25)),
                     ),
                   ),
                 ),
@@ -291,7 +293,7 @@ class PermissionHelper {
                     },
                     child: const Text(
                       'Izinkan',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF0F623F)),
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF132E25)),
                     ),
                   ),
                 ),
@@ -308,7 +310,7 @@ class PermissionHelper {
                     },
                     child: const Text(
                       'Jangan izinkan',
-                      style: TextStyle(fontSize: 15, color: Color(0xFF0F623F)),
+                      style: TextStyle(fontSize: 15, color: Color(0xFF132E25)),
                     ),
                   ),
                 ),

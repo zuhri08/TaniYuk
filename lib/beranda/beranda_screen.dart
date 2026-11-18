@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import '../peluang/map_toko_screen.dart';
 import '../akun/uang_tani.dart';
 import '../akun/catatan_aktivitas.dart';
 import '../akun/pasar_tani.dart';
 import '../akun/notifikasi.dart';
 import '../services/bmkg_weather_service.dart';
+import '../services/app_store.dart';
 
 class BerandaScreen extends StatefulWidget {
   final Function(int)? onNavigateToTab;
@@ -30,6 +32,15 @@ class _BerandaScreenState extends State<BerandaScreen> {
     });
   }
 
+  Future<void> _refreshBmkgWeather() async {
+    _loadBmkgWeather();
+    try {
+      await _weatherFuture;
+    } catch (_) {
+      // Data fallback tetap ditampilkan oleh FutureBuilder.
+    }
+  }
+
   IconData _getWeatherIcon(String condition) {
     if (condition.contains('Hujan')) return Icons.water_drop_rounded;
     if (condition.contains('Berawan')) return Icons.cloud_queue_rounded;
@@ -39,39 +50,57 @@ class _BerandaScreenState extends State<BerandaScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+    final store = AppStore.instance;
+
+    return ListenableBuilder(
+      listenable: store,
+      builder: (context, _) => Scaffold(
+      backgroundColor: const Color(0xFFFFF4E1),
       appBar: AppBar(
-        backgroundColor: Colors.white,
         elevation: 0,
         titleSpacing: 20,
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
+          children: [
             Text(
-              'Halo, Pak Budi 👋',
-              style: TextStyle(
-                color: Color(0xFF1F2937),
+              'Halo, ${store.profile.name} 👋',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                color: Colors.white,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: 2),
-            Text(
+            const SizedBox(height: 2),
+            const Text(
               'Semangat, hari baru untuk bertani!',
               style: TextStyle(
-                color: Color(0xFF6B7280),
+                color: Colors.white70,
                 fontSize: 12,
               ),
             ),
           ],
         ),
         actions: [
+          IconButton(
+            tooltip: 'Perbarui cuaca',
+            icon: const Icon(Icons.refresh_rounded, color: Colors.white),
+            onPressed: () {
+              _refreshBmkgWeather();
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  duration: Duration(seconds: 2),
+                  content: Text('Memperbarui data cuaca...'),
+                ),
+              );
+            },
+          ),
           Stack(
             alignment: Alignment.center,
             children: [
               IconButton(
-                icon: const Icon(Icons.notifications_none_rounded, color: Color(0xFF1F2937)),
+                icon: const Icon(Icons.notifications_none_rounded, color: Colors.white),
                 onPressed: () {
                   Navigator.push(
                     context,
@@ -86,7 +115,7 @@ class _BerandaScreenState extends State<BerandaScreen> {
                   width: 8,
                   height: 8,
                   decoration: const BoxDecoration(
-                    color: Color(0xFF0F623F),
+                    color: Colors.red,
                     shape: BoxShape.circle,
                   ),
                 ),
@@ -96,7 +125,11 @@ class _BerandaScreenState extends State<BerandaScreen> {
           const SizedBox(width: 8),
         ],
       ),
-      body: SingleChildScrollView(
+      body: RefreshIndicator(
+        color: const Color(0xFF132E25),
+        onRefresh: _refreshBmkgWeather,
+        child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -112,7 +145,7 @@ class _BerandaScreenState extends State<BerandaScreen> {
                     width: double.infinity,
                     height: 160,
                     decoration: BoxDecoration(
-                      color: const Color(0xFF0F623F),
+                      color: const Color(0xFF132E25),
                       borderRadius: BorderRadius.circular(16),
                     ),
                     child: Center(
@@ -135,14 +168,14 @@ class _BerandaScreenState extends State<BerandaScreen> {
                   padding: const EdgeInsets.all(18),
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
-                      colors: [Color(0xFF0F623F), Color(0xFF15803D)],
+                      colors: [Color(0xFF132E25), Color(0xFF2C5E4A)],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFF0F623F).withValues(alpha: 0.2),
+                        color: const Color(0xFF132E25).withValues(alpha: 0.2),
                         blurRadius: 10,
                         offset: const Offset(0, 4),
                       ),
@@ -153,32 +186,39 @@ class _BerandaScreenState extends State<BerandaScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Row(
-                            children: [
-                              Icon(_getWeatherIcon(weather.condition), color: Colors.amber, size: 38),
-                              const SizedBox(width: 12),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    '${weather.temperature.toStringAsFixed(1)}°C',
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 26,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                          Expanded(
+                            child: Row(
+                              children: [
+                                Icon(_getWeatherIcon(weather.condition), color: Colors.amber, size: 38),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        '${weather.temperature.toStringAsFixed(1)}°C',
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 26,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      Text(
+                                        '${weather.condition} • ${weather.location}',
+                                        style: const TextStyle(
+                                          color: Colors.white70,
+                                          fontSize: 12,
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ],
                                   ),
-                                  Text(
-                                    '${weather.condition} • ${weather.location}',
-                                    style: const TextStyle(
-                                      color: Colors.white70,
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
+                                ),
+                              ],
+                            ),
                           ),
+                          const SizedBox(width: 8),
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                             decoration: BoxDecoration(
@@ -186,6 +226,7 @@ class _BerandaScreenState extends State<BerandaScreen> {
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Row(
+                              mainAxisSize: MainAxisSize.min,
                               children: [
                                 const Icon(Icons.water_drop_outlined, color: Colors.white, size: 14),
                                 const SizedBox(width: 4),
@@ -245,52 +286,68 @@ class _BerandaScreenState extends State<BerandaScreen> {
             ),
             const SizedBox(height: 24),
 
-            // Peluang Tani Section Header
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'Peluang Tani',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF1F2937),
+            // Mapbox Toko Pupuk Simulation Banner
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const MapTokoScreen()),
+                );
+              },
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFF2C5E4A), Color(0xFF132E25)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                   ),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    if (widget.onNavigateToTab != null) widget.onNavigateToTab!(1);
-                  },
-                  child: const Text(
-                    'Lihat semua',
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFF0F623F),
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF2C5E4A).withValues(alpha: 0.2),
+                      blurRadius: 8,
+                      offset: const Offset(0, 3),
                     ),
-                  ),
+                  ],
                 ),
-              ],
-            ),
-            const SizedBox(height: 4),
-            const Text(
-              'Tanaman yang cocok ditanam bulan ini',
-              style: TextStyle(fontSize: 12, color: Color(0xFF6B7280)),
-            ),
-            const SizedBox(height: 14),
-
-            // Crop Horizontal List
-            SizedBox(
-              height: 120,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                children: [
-                  _cropCard('Wortel', 'Potensi panen tinggi', 'Rp8.000/kg', Colors.orange.shade100, Icons.grass),
-                  const SizedBox(width: 12),
-                  _cropCard('Cabai', 'Potensi panen tinggi', 'Rp35.000/kg', Colors.red.shade100, Icons.local_fire_department),
-                  const SizedBox(width: 12),
-                  _cropCard('Tomat', 'Kecocokan 95%', 'Rp12.000/kg', Colors.red.shade50, Icons.eco),
-                ],
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.2),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(Icons.storefront_rounded, color: Colors.white, size: 28),
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: const [
+                          Text(
+                            'Cari Pupuk',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                          SizedBox(height: 4),
+                          Text(
+                            'Temukan kios pupuk terdekat & cek stok tersedia',
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: Colors.white70,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Icon(Icons.arrow_forward_ios_rounded, color: Colors.white70, size: 16),
+                  ],
+                ),
               ),
             ),
             const SizedBox(height: 24),
@@ -319,8 +376,8 @@ class _BerandaScreenState extends State<BerandaScreen> {
                   context,
                   title: 'Peluang Tani',
                   icon: Icons.eco_outlined,
-                  color: const Color(0xFFE8F5E9),
-                  iconColor: const Color(0xFF0F623F),
+                  color: const Color(0xFF89D7B7),
+                  iconColor: const Color(0xFF132E25),
                   onTap: () {
                     if (widget.onNavigateToTab != null) widget.onNavigateToTab!(1);
                   },
@@ -349,7 +406,7 @@ class _BerandaScreenState extends State<BerandaScreen> {
                   context,
                   title: 'Uang Tani',
                   icon: Icons.account_balance_wallet_outlined,
-                  color: const Color(0xFFDCFCE7),
+                  color: const Color(0xFF89D7B7),
                   iconColor: Colors.green.shade700,
                   onTap: () {
                     Navigator.push(
@@ -443,57 +500,8 @@ class _BerandaScreenState extends State<BerandaScreen> {
             const SizedBox(height: 20),
           ],
         ),
+        ),
       ),
-    );
-  }
-
-  Widget _cropCard(String title, String status, String price, Color bgColor, IconData icon) {
-    return Container(
-      width: 160,
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.shade200),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: bgColor,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Icon(icon, color: const Color(0xFF0F623F), size: 18),
-              ),
-              const SizedBox(width: 8),
-              Text(
-                title,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 15,
-                  color: Color(0xFF1F2937),
-                ),
-              ),
-            ],
-          ),
-          Text(
-            status,
-            style: const TextStyle(fontSize: 11, color: Color(0xFF10B981), fontWeight: FontWeight.w500),
-          ),
-          Text(
-            price,
-            style: const TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF0F623F),
-            ),
-          ),
-        ],
       ),
     );
   }

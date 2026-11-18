@@ -6,17 +6,20 @@ import 'konten_tersimpan.dart';
 import 'notifikasi.dart';
 import 'keamanan_akun.dart';
 import 'pusat_bantuan.dart';
+import 'daftar_pesanan_screen.dart';
 import '../awal/login_screen.dart';
+import '../services/app_store.dart';
 
 class AkunScreen extends StatelessWidget {
   const AkunScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final store = AppStore.instance;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: const Color(0xFFFFF4E1),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF0F623F),
         elevation: 0,
         title: const Text(
           'Akun Saya',
@@ -28,13 +31,21 @@ class AkunScreen extends StatelessWidget {
         ),
         actions: [
           IconButton(
+            tooltip: 'Keamanan akun',
             icon: const Icon(Icons.settings_outlined, color: Colors.white),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const KeamananAkunScreen()),
+              );
+            },
           ),
           const SizedBox(width: 8),
         ],
       ),
-      body: SingleChildScrollView(
+      body: ListenableBuilder(
+        listenable: store,
+        builder: (context, _) => SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),
         child: Column(
           children: [
@@ -61,38 +72,38 @@ class AkunScreen extends StatelessWidget {
                         width: 60,
                         height: 60,
                         decoration: const BoxDecoration(
-                          color: Color(0xFFE8F5E9),
+                          color: Color(0xFF89D7B7),
                           shape: BoxShape.circle,
                         ),
                         child: const Center(
-                          child: Icon(Icons.person, color: Color(0xFF0F623F), size: 36),
+                          child: Icon(Icons.person, color: Color(0xFF132E25), size: 36),
                         ),
                       ),
                       const SizedBox(width: 16),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const [
+                          children: [
                             Text(
-                              'Budi Santoso',
-                              style: TextStyle(
+                              store.profile.name,
+                              style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
                                 color: Color(0xFF1F2937),
                               ),
                             ),
-                            SizedBox(height: 2),
+                            const SizedBox(height: 2),
                             Text(
-                              'Petani • Bandung',
-                              style: TextStyle(
+                              '${store.profile.role} • ${store.profile.location.split(',').first.trim()}',
+                              style: const TextStyle(
                                 fontSize: 13,
                                 color: Color(0xFF6B7280),
                               ),
                             ),
-                            SizedBox(height: 2),
+                            const SizedBox(height: 2),
                             Text(
-                              'Bergabung sejak Januari 2026',
-                              style: TextStyle(
+                              'Bergabung sejak ${store.profile.joinedSince}',
+                              style: const TextStyle(
                                 fontSize: 11,
                                 color: Colors.grey,
                               ),
@@ -110,7 +121,7 @@ class AkunScreen extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      _statItem('3', 'Lahan'),
+                      _statItem('${store.lands.length}', 'Lahan'),
                       Container(height: 24, width: 1, color: Colors.grey.shade300),
                       _statItem('12', 'Postingan'),
                       Container(height: 24, width: 1, color: Colors.grey.shade300),
@@ -139,6 +150,18 @@ class AkunScreen extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => const KelolaProfilScreen()),
+                      );
+                    },
+                  ),
+                  _divider(),
+                  _menuTile(
+                    context,
+                    title: 'Pesanan Saya & Status Pengiriman',
+                    icon: Icons.local_shipping_outlined,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const DaftarPesananScreen()),
                       );
                     },
                   ),
@@ -235,6 +258,7 @@ class AkunScreen extends StatelessWidget {
             const SizedBox(height: 20),
           ],
         ),
+        ),
       ),
     );
   }
@@ -247,7 +271,7 @@ class AkunScreen extends StatelessWidget {
           style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
-            color: Color(0xFF0F623F),
+            color: Color(0xFF132E25),
           ),
         ),
         const SizedBox(height: 2),
@@ -268,7 +292,7 @@ class AkunScreen extends StatelessWidget {
     required IconData icon,
     required VoidCallback onTap,
     Color textColor = const Color(0xFF374151),
-    Color iconColor = const Color(0xFF0F623F),
+    Color iconColor = const Color(0xFF132E25),
   }) {
     return ListTile(
       leading: Icon(icon, color: iconColor, size: 22),

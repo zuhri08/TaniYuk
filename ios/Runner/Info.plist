@@ -47,6 +47,10 @@
 			</array>
 		</dict>
 	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>TaniYuk membutuhkan akses kamera untuk mengambil foto tanaman dan identifikasi hama.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>TaniYuk membutuhkan akses galeri foto untuk memilih gambar tanaman dan postingan komunitas.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
