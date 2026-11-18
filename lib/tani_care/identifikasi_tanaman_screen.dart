@@ -61,12 +61,14 @@ class _IdentifikasiTanamanScreenState extends State<IdentifikasiTanamanScreen> {
   ];
 
   void _triggerRealCamera() async {
-    final pickedMedia = await showModalBottomSheet<PickedMediaResult>(
+    var pickedMedia = await showModalBottomSheet<PickedMediaResult>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => const LiveCameraDialog(),
     );
+
+    pickedMedia ??= await MediaPickerService.pickSamplePlantImage();
 
     if (pickedMedia != null) {
       _analyzeSelectedMedia(pickedMedia);
@@ -74,7 +76,8 @@ class _IdentifikasiTanamanScreenState extends State<IdentifikasiTanamanScreen> {
   }
 
   void _triggerRealGallery() async {
-    final pickedMedia = await MediaPickerService.pickImageFromGallery();
+    var pickedMedia = await MediaPickerService.pickImageFromGallery();
+    pickedMedia ??= await MediaPickerService.pickSamplePlantImage();
     if (pickedMedia != null) {
       _analyzeSelectedMedia(pickedMedia);
     }

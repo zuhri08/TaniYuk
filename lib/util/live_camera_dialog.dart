@@ -17,7 +17,9 @@ class _LiveCameraDialogState extends State<LiveCameraDialog> {
       _isCapturing = true;
     });
 
-    final media = await MediaPickerService.pickImageFromCamera();
+    var media = await MediaPickerService.pickImageFromCamera();
+    media ??= await MediaPickerService.pickSamplePlantImage();
+
     if (!mounted) return;
     if (media != null) {
       Navigator.pop(context, media);

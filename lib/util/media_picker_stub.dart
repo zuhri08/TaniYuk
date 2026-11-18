@@ -60,6 +60,14 @@ class MediaPickerService {
     return null;
   }
 
+  static Future<PickedMediaResult?> pickSamplePlantImage() async {
+    return PickedMediaResult(
+      fileName: '📷 Foto Kamera TaniYuk (Sampel Daun Tomat).jpg',
+      objectUrl: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=500',
+      filePath: null,
+    );
+  }
+
   static Future<bool> sendSystemNotification({
     required String title,
     required String body,
