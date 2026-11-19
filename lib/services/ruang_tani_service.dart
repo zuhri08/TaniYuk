@@ -1,5 +1,5 @@
 import 'dart:math';
-import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'firebase_service.dart';
 
@@ -37,21 +37,71 @@ class RuangTaniPost {
     required this.commentCount,
     required this.comments,
   });
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'userName': userName,
+        'userLocation': userLocation,
+        'timeText': timeText,
+        'createdAt': createdAt.toIso8601String(),
+        'postText': postText,
+        'attachedImageLabel': attachedImageLabel,
+        'imageUrl': imageUrl,
+        'category': category,
+        'likeCount': likeCount,
+        'commentCount': commentCount,
+        'comments': comments,
+      };
+
+  factory RuangTaniPost.fromJson(Map<String, dynamic> json) => RuangTaniPost(
+        id: json['id'] as String,
+        userName: json['userName'] as String? ?? 'Petani TaniYuk',
+        userLocation: json['userLocation'] as String? ?? 'Indonesia',
+        timeText: json['timeText'] as String? ?? 'Baru saja',
+        createdAt: DateTime.tryParse(json['createdAt']?.toString() ?? '') ?? DateTime.now(),
+        postText: json['postText'] as String? ?? '',
+        attachedImageLabel: json['attachedImageLabel'] as String?,
+        imageUrl: json['imageUrl'] as String?,
+        category: json['category'] as String? ?? 'Diskusi',
+        likeCount: (json['likeCount'] as num?)?.toInt() ?? 0,
+        isLiked: false,
+        commentCount: (json['commentCount'] as num?)?.toInt() ?? 0,
+        comments: (json['comments'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [],
+        imageColor: const Color(0xFF89D7B7),
+      );
 }
 
 class RuangTaniService {
-  // Daftar postingan lokal pengguna
+  static final ValueNotifier<int> postsNotifier = ValueNotifier<int>(0);
   static final List<RuangTaniPost> _posts = [];
 
+  static List<RuangTaniPost> getPosts({String category = 'Semua', String searchQuery = ''}) {
+    final list = <RuangTaniPost>[..._posts];
+    list.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
+    return list.where((post) {
+      final matchesCategory = category == 'Semua' || post.category == category;
+      final matchesSearch = searchQuery.isEmpty ||
+          post.postText.toLowerCase().contains(searchQuery.toLowerCase()) ||
+          post.userName.toLowerCase().contains(searchQuery.toLowerCase()) ||
+          post.userLocation.toLowerCase().contains(searchQuery.toLowerCase());
+      return matchesCategory && matchesSearch;
+    }).toList();
+  }
+
   static Stream<List<RuangTaniPost>> getPostsStream({String category = 'Semua', String searchQuery = ''}) {
+    // Mendengarkan perubahan Firestore secara live
     return FirebaseService.firestore
         .collection('ruang_tani')
         .snapshots()
         .map((snapshot) {
-      final firestorePosts = snapshot.docs.map((doc) {
+      for (var doc in snapshot.docs) {
         final data = doc.data();
-        return RuangTaniPost(
-          id: doc.id,
+        final id = doc.id;
+        final existingIdx = _posts.indexWhere((p) => p.id == id);
+
+        final post = RuangTaniPost(
+          id: id,
           userName: data['userName'] as String? ?? 'Petani TaniYuk',
           userLocation: data['userLocation'] as String? ?? 'Indonesia',
           timeText: 'Baru saja',
@@ -66,38 +116,16 @@ class RuangTaniService {
           comments: (data['comments'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [],
           imageColor: const Color(0xFF89D7B7),
         );
-      }).toList();
 
-      final combined = <RuangTaniPost>[..._posts];
-      for (var fPost in firestorePosts) {
-        final existingIdx = combined.indexWhere((p) => p.id == fPost.id);
         if (existingIdx == -1) {
-          combined.add(fPost);
+          _posts.add(post);
+        } else {
+          _posts[existingIdx] = post;
         }
       }
 
-      combined.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-
-      return combined.where((post) {
-        final matchesCategory = category == 'Semua' || post.category == category;
-        final matchesSearch = searchQuery.isEmpty ||
-            post.postText.toLowerCase().contains(searchQuery.toLowerCase()) ||
-            post.userName.toLowerCase().contains(searchQuery.toLowerCase()) ||
-            post.userLocation.toLowerCase().contains(searchQuery.toLowerCase());
-        return matchesCategory && matchesSearch;
-      }).toList();
+      return getPosts(category: category, searchQuery: searchQuery);
     });
-  }
-
-  static List<RuangTaniPost> getPosts({String category = 'Semua', String searchQuery = ''}) {
-    return _posts.where((post) {
-      final matchesCategory = category == 'Semua' || post.category == category;
-      final matchesSearch = searchQuery.isEmpty ||
-          post.postText.toLowerCase().contains(searchQuery.toLowerCase()) ||
-          post.userName.toLowerCase().contains(searchQuery.toLowerCase()) ||
-          post.userLocation.toLowerCase().contains(searchQuery.toLowerCase());
-      return matchesCategory && matchesSearch;
-    }).toList();
   }
 
   static RuangTaniPost createPost({
@@ -128,6 +156,7 @@ class RuangTaniService {
     );
 
     _posts.insert(0, newPost);
+    postsNotifier.value++;
 
     // Otomatis sinkronkan postingan baru ke Cloud Firestore ('ruang_tani')
     FirebaseService.syncPostToFirestore({
@@ -154,6 +183,12 @@ class RuangTaniService {
       } else {
         post.likeCount = max(0, post.likeCount - 1);
       }
+      postsNotifier.value++;
+
+      FirebaseService.syncPostToFirestore({
+        'id': post.id,
+        'likeCount': post.likeCount,
+      });
     }
   }
 
@@ -164,10 +199,18 @@ class RuangTaniService {
       final formattedComment = '$authorName: $commentText';
       post.comments.add(formattedComment);
       post.commentCount = post.comments.length;
+      postsNotifier.value++;
+
+      FirebaseService.syncPostToFirestore({
+        'id': post.id,
+        'commentCount': post.commentCount,
+        'comments': post.comments,
+      });
     }
   }
 
   static void deletePost(String postId) {
     _posts.removeWhere((p) => p.id == postId);
+    postsNotifier.value++;
   }
 }
