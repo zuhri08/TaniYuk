@@ -33,6 +33,8 @@ class FirebaseService {
   static Future<UserCredential?> registerUser({
     required String email,
     required String password,
+    String? name,
+    String? phone,
   }) async {
     await initializeFirebase();
     try {
@@ -41,11 +43,22 @@ class FirebaseService {
         password: password,
       );
 
+      final displayName = (name != null && name.trim().isNotEmpty)
+          ? name.trim()
+          : email.split('@').first;
+
       if (cred.user != null) {
+        try {
+          await cred.user!.updateDisplayName(displayName);
+        } catch (e) {
+          debugPrint('Update display name notice: $e');
+        }
+
         await saveUserProfileToFirestore(
           uid: cred.user!.uid,
-          name: email.split('@').first,
+          name: displayName,
           email: email,
+          phone: phone,
         );
       }
       return cred;
@@ -67,10 +80,17 @@ class FirebaseService {
       );
 
       if (cred.user != null) {
+        final profileDoc = await getUserProfileFromFirestore(cred.user!.uid);
+        final fetchedName = profileDoc?['name'] as String? ?? cred.user!.displayName ?? email.split('@').first;
+        final fetchedPhone = profileDoc?['phone'] as String? ?? '081234567890';
+        final fetchedLocation = profileDoc?['location'] as String? ?? 'Surabaya, Jawa Timur';
+
         await saveUserProfileToFirestore(
           uid: cred.user!.uid,
-          name: cred.user!.displayName ?? email.split('@').first,
+          name: fetchedName,
           email: cred.user!.email ?? email,
+          phone: fetchedPhone,
+          location: fetchedLocation,
         );
       }
       return cred;
@@ -106,12 +126,27 @@ class FirebaseService {
   // --- CLOUD FIRESTORE DATABASE ---
   static FirebaseFirestore get firestore => FirebaseFirestore.instance;
 
+  /// Mengambil Profil Pengguna dari Cloud Firestore
+  static Future<Map<String, dynamic>?> getUserProfileFromFirestore(String uid) async {
+    await initializeFirebase();
+    try {
+      final doc = await firestore.collection('users').doc(uid).get();
+      if (doc.exists && doc.data() != null) {
+        return doc.data();
+      }
+    } catch (e) {
+      debugPrint('Firestore fetch user profile notice: $e');
+    }
+    return null;
+  }
+
   /// Menyimpan Profil Pengguna ke Cloud Firestore ('users')
   static Future<void> saveUserProfileToFirestore({
     required String uid,
     required String name,
     required String email,
     String? phone,
+    String? location,
   }) async {
     await initializeFirebase();
     try {
@@ -121,7 +156,7 @@ class FirebaseService {
         'email': email,
         'phone': phone ?? '081234567890',
         'role': 'Petani TaniYuk',
-        'location': 'Surabaya, Jawa Timur',
+        'location': location ?? 'Surabaya, Jawa Timur',
         'updatedAt': FieldValue.serverTimestamp(),
       }, SetOptions(merge: true));
       debugPrint('Cloud Firestore: User profile synced ($email)');

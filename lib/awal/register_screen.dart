@@ -66,6 +66,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
       await FirebaseService.registerUser(
         email: email,
         password: password,
+        name: name,
+        phone: phone,
       );
 
       if (!mounted) return;

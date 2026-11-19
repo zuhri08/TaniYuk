@@ -32,6 +32,32 @@ class RealTokoPupuk {
 }
 
 class GeocodingPlacesService {
+  /// Mengambil Alamat GPS Pengguna Saat Ini via Geolocator + Nominatim Reverse Geocoding
+  static Future<String> getCurrentUserAddress() async {
+    try {
+      Position? pos;
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (serviceEnabled) {
+        LocationPermission perm = await Geolocator.checkPermission();
+        if (perm == LocationPermission.denied) {
+          perm = await Geolocator.requestPermission();
+        }
+        if (perm == LocationPermission.whileInUse || perm == LocationPermission.always) {
+          pos = await Geolocator.getCurrentPosition(
+            timeLimit: const Duration(seconds: 4),
+          );
+        }
+      }
+
+      if (pos != null) {
+        return await reverseGeocode(lat: pos.latitude, lon: pos.longitude);
+      }
+    } catch (e) {
+      debugPrint('Geocoding get address notice: $e');
+    }
+    return 'Surabaya, Jawa Timur';
+  }
+
   /// Melakukan Reverse Geocoding untuk mendapatkan alamat lengkap dari koordinat GPS
   static Future<String> reverseGeocode({
     required double lat,

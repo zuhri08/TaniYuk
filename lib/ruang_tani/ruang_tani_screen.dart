@@ -5,6 +5,7 @@ import '../util/media_picker_service.dart';
 import '../akun/notifikasi.dart';
 import '../services/ruang_tani_service.dart';
 import '../services/app_store.dart';
+import '../services/geocoding_places_service.dart';
 
 class RuangTaniScreen extends StatefulWidget {
   const RuangTaniScreen({super.key});
@@ -28,7 +29,7 @@ class _RuangTaniScreenState extends State<RuangTaniScreen> {
     final messenger = ScaffoldMessenger.of(context);
     final textController = TextEditingController();
     PickedMediaResult? attachedMedia;
-    String attachedLocation = 'Bandung';
+    String attachedLocation = AppStore.instance.profile.location;
     String selectedCategory = 'Diskusi';
 
     showModalBottomSheet(
@@ -201,13 +202,13 @@ class _RuangTaniScreenState extends State<RuangTaniScreen> {
                       IconButton(
                         icon: const Icon(Icons.location_on_outlined, color: Color(0xFF132E25), size: 24),
                         tooltip: 'Sematkan Lokasi GPS',
-                        onPressed: () {
-                          final loc = AppStore.instance.profile.location;
+                        onPressed: () async {
+                          final realLoc = await GeocodingPlacesService.getCurrentUserAddress();
                           setModalState(() {
-                            attachedLocation = loc.isNotEmpty ? loc : 'Indonesia (GPS Terdeteksi)';
+                            attachedLocation = realLoc;
                           });
                           messenger.showSnackBar(
-                            SnackBar(content: Text('Lokasi GPS ($attachedLocation) berhasil disematkan!')),
+                            SnackBar(content: Text('Lokasi GPS ($realLoc) berhasil disematkan!')),
                           );
                         },
                       ),
@@ -595,8 +596,16 @@ class _RuangTaniScreenState extends State<RuangTaniScreen> {
 
           // Feed Post List
           Expanded(
-            child: _filteredPosts.isEmpty
-                ? Center(
+            child: StreamBuilder<List<RuangTaniPost>>(
+              stream: RuangTaniService.getPostsStream(
+                category: _categories[_selectedChip],
+                searchQuery: _searchQuery,
+              ),
+              builder: (context, snapshot) {
+                final posts = snapshot.data ?? _filteredPosts;
+
+                if (posts.isEmpty) {
+                  return Center(
                     child: Padding(
                       padding: const EdgeInsets.all(28.0),
                       child: Column(
@@ -648,18 +657,22 @@ class _RuangTaniScreenState extends State<RuangTaniScreen> {
                         ],
                       ),
                     ),
-                  )
-                : ListView.builder(
-                    padding: const EdgeInsets.all(16),
-                    itemCount: _filteredPosts.length,
-                    itemBuilder: (context, index) {
-                      final post = _filteredPosts[index];
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 16.0),
-                        child: _buildPostCard(post),
-                      );
-                    },
-                  ),
+                  );
+                }
+
+                return ListView.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: posts.length,
+                  itemBuilder: (context, index) {
+                    final post = posts[index];
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 16.0),
+                      child: _buildPostCard(post),
+                    );
+                  },
+                );
+              },
+            ),
           ),
         ],
       ),

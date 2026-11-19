@@ -54,9 +54,18 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (!mounted) return;
 
+      final uid = userCred?.user?.uid;
+      final profileDoc = uid != null ? await FirebaseService.getUserProfileFromFirestore(uid) : null;
+
+      final realName = profileDoc?['name'] as String? ?? userCred?.user?.displayName ?? identity.split('@').first;
+      final realPhone = profileDoc?['phone'] as String? ?? '081234567890';
+      final realLocation = profileDoc?['location'] as String? ?? 'Surabaya, Jawa Timur';
+
       AppStore.instance.updateProfile(
+        name: realName,
         email: userCred?.user?.email ?? identity,
-        name: userCred?.user?.displayName ?? 'Petani TaniYuk',
+        phone: realPhone,
+        location: realLocation,
       );
 
       ScaffoldMessenger.of(context).showSnackBar(

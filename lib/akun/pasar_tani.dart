@@ -693,13 +693,13 @@ class _PasarTaniScreenState extends State<PasarTaniScreen> {
                 ),
                 const SizedBox(height: 16),
                 Row(
-                  children: const [
-                    Icon(Icons.location_on, color: Color(0xFF132E25), size: 16),
-                    SizedBox(width: 4),
+                  children: [
+                    const Icon(Icons.location_on, color: Color(0xFF132E25), size: 16),
+                    const SizedBox(width: 4),
                     Expanded(
                       child: Text(
-                        'Produk di sekitar Bandung • Radius 25 km',
-                        style: TextStyle(
+                        'Produk di sekitar ${store.profile.location.split(',').first.trim()} • Radius 25 km',
+                        style: const TextStyle(
                           fontSize: 12,
                           color: Color(0xFF4B5563),
                           fontWeight: FontWeight.w500,

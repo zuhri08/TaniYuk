@@ -40,8 +40,54 @@ class RuangTaniPost {
 }
 
 class RuangTaniService {
-  // Daftar postingan nyata pengguna (bebas data dummy statis)
+  // Daftar postingan lokal pengguna
   static final List<RuangTaniPost> _posts = [];
+
+  static Stream<List<RuangTaniPost>> getPostsStream({String category = 'Semua', String searchQuery = ''}) {
+    return FirebaseService.firestore
+        .collection('ruang_tani')
+        .snapshots()
+        .map((snapshot) {
+      final firestorePosts = snapshot.docs.map((doc) {
+        final data = doc.data();
+        return RuangTaniPost(
+          id: doc.id,
+          userName: data['userName'] as String? ?? 'Petani TaniYuk',
+          userLocation: data['userLocation'] as String? ?? 'Indonesia',
+          timeText: 'Baru saja',
+          createdAt: DateTime.tryParse(data['createdAt']?.toString() ?? '') ?? DateTime.now(),
+          postText: data['postText'] as String? ?? '',
+          attachedImageLabel: data['attachedImageLabel'] as String?,
+          imageUrl: data['imageUrl'] as String?,
+          category: data['category'] as String? ?? 'Diskusi',
+          likeCount: (data['likeCount'] as num?)?.toInt() ?? 0,
+          isLiked: false,
+          commentCount: (data['commentCount'] as num?)?.toInt() ?? 0,
+          comments: (data['comments'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [],
+          imageColor: const Color(0xFF89D7B7),
+        );
+      }).toList();
+
+      final combined = <RuangTaniPost>[..._posts];
+      for (var fPost in firestorePosts) {
+        final existingIdx = combined.indexWhere((p) => p.id == fPost.id);
+        if (existingIdx == -1) {
+          combined.add(fPost);
+        }
+      }
+
+      combined.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
+      return combined.where((post) {
+        final matchesCategory = category == 'Semua' || post.category == category;
+        final matchesSearch = searchQuery.isEmpty ||
+            post.postText.toLowerCase().contains(searchQuery.toLowerCase()) ||
+            post.userName.toLowerCase().contains(searchQuery.toLowerCase()) ||
+            post.userLocation.toLowerCase().contains(searchQuery.toLowerCase());
+        return matchesCategory && matchesSearch;
+      }).toList();
+    });
+  }
 
   static List<RuangTaniPost> getPosts({String category = 'Semua', String searchQuery = ''}) {
     return _posts.where((post) {
