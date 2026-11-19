@@ -19,9 +19,41 @@ class PickedMediaResult {
 
 class MediaPickerService {
   static Future<PickedMediaResult?> pickImageFromCamera() async {
-    // Pada lingkungan Web/Desktop Browser tanpa kamera hardware belakang,
-    // langsung hasilkan potret kamera TaniYuk tanpa memicu dialog file gallery!
-    return pickSamplePlantImage();
+    if (kIsWeb) {
+      final Completer<PickedMediaResult?> completer = Completer();
+      final html.InputElement uploadInput = html.InputElement(type: 'file')
+        ..accept = 'image/*'
+        ..setAttribute('capture', 'camera');
+
+      uploadInput.click();
+
+      uploadInput.onChange.listen((e) {
+        final files = uploadInput.files;
+        if (files != null && files.isNotEmpty) {
+          final file = files[0];
+          final reader = html.FileReader();
+
+          reader.onLoadEnd.listen((e) {
+            final objectUrl = html.Url.createObjectUrlFromBlob(file);
+            completer.complete(
+              PickedMediaResult(
+                bytes: reader.result as Uint8List?,
+                objectUrl: objectUrl,
+                fileName: file.name,
+                filePath: objectUrl,
+              ),
+            );
+          });
+
+          reader.readAsArrayBuffer(file);
+        } else {
+          completer.complete(null);
+        }
+      });
+
+      return completer.future;
+    }
+    return null;
   }
 
   static Future<PickedMediaResult?> pickImageFromGallery() async {
