@@ -78,7 +78,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('🎉 Akun Firebase berhasil dibuat! Selamat datang di TaniYuk, $name.'),
+          content: Text('🎉 Akun berhasil dibuat! Selamat datang di TaniYuk, $name.'),
           backgroundColor: const Color(0xFF132E25),
         ),
       );
@@ -332,9 +332,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
                         )
                       : const Text(
-                          'Daftar dengan Firebase Auth',
+                          'Daftar',
                           style: TextStyle(
-                            fontSize: 15,
+                            fontSize: 16,
                             fontWeight: FontWeight.bold,
                           ),
                         ),

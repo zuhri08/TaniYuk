@@ -61,7 +61,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('✨ Berhasil masuk sebagai ${userCred?.user?.email ?? identity} (Firebase Auth)'),
+          content: Text('✨ Berhasil masuk sebagai ${userCred?.user?.email ?? identity}'),
           backgroundColor: const Color(0xFF132E25),
         ),
       );
@@ -284,9 +284,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
                         )
                       : const Text(
-                          'Masuk dengan Firebase Auth',
+                          'Masuk',
                           style: TextStyle(
-                            fontSize: 15,
+                            fontSize: 16,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
