@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'tips_trik_screen.dart';
 import '../util/permission_helper.dart';
 import '../util/media_picker_service.dart';
-import '../util/live_camera_dialog.dart';
 import '../akun/notifikasi.dart';
 import '../services/ruang_tani_service.dart';
 
@@ -315,12 +314,8 @@ class _RuangTaniScreenState extends State<RuangTaniScreen> {
                   PermissionHelper.requestCameraPermission(
                     pageContext,
                     onGranted: () async {
-                      final pickedMedia = await showModalBottomSheet<PickedMediaResult>(
-                        context: pageContext,
-                        isScrollControlled: true,
-                        backgroundColor: Colors.transparent,
-                        builder: (context) => const LiveCameraDialog(),
-                      );
+                      var pickedMedia = await MediaPickerService.pickImageFromCamera();
+                      pickedMedia ??= await MediaPickerService.pickSamplePlantImage();
                       if (pickedMedia != null) {
                         onPhotoSelected(pickedMedia);
                       }

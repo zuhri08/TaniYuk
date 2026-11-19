@@ -2,7 +2,6 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import '../util/permission_helper.dart';
 import '../util/media_picker_service.dart';
-import '../util/live_camera_dialog.dart';
 import '../services/plant_ai_service.dart';
 
 class IdentifikasiTanamanScreen extends StatefulWidget {
@@ -61,13 +60,7 @@ class _IdentifikasiTanamanScreenState extends State<IdentifikasiTanamanScreen> {
   ];
 
   void _triggerRealCamera() async {
-    var pickedMedia = await showModalBottomSheet<PickedMediaResult>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => const LiveCameraDialog(),
-    );
-
+    var pickedMedia = await MediaPickerService.pickImageFromCamera();
     pickedMedia ??= await MediaPickerService.pickSamplePlantImage();
 
     if (pickedMedia != null) {
