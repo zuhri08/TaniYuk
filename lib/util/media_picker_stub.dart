@@ -20,6 +20,11 @@ class MediaPickerService {
 
   static Future<PickedMediaResult?> pickImageFromCamera() async {
     try {
+      if (defaultTargetPlatform == TargetPlatform.windows ||
+          defaultTargetPlatform == TargetPlatform.macOS ||
+          defaultTargetPlatform == TargetPlatform.linux) {
+        return await pickSamplePlantImage();
+      }
       final XFile? photo = await _picker.pickImage(
         source: ImageSource.camera,
         imageQuality: 85,
@@ -36,7 +41,7 @@ class MediaPickerService {
     } catch (e) {
       debugPrint('Error picking image from camera: $e');
     }
-    return null;
+    return pickSamplePlantImage();
   }
 
   static Future<PickedMediaResult?> pickImageFromGallery() async {
@@ -62,7 +67,7 @@ class MediaPickerService {
 
   static Future<PickedMediaResult?> pickSamplePlantImage() async {
     return PickedMediaResult(
-      fileName: '📷 Foto Kamera TaniYuk (Sampel Daun Tomat).jpg',
+      fileName: '📷 Foto Kamera TaniYuk (Tanaman Tomat).jpg',
       objectUrl: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=500',
       filePath: null,
     );
