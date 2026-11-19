@@ -226,13 +226,23 @@ class _RuangTaniScreenState extends State<RuangTaniScreen> {
                           }
 
                           final profile = AppStore.instance.profile;
+                          final hasMedia = attachedMedia != null;
+                          final mediaLabel = hasMedia
+                              ? (attachedMedia!.fileName.isNotEmpty ? attachedMedia!.fileName : '📷 Foto Kegiatan Pertanian.jpg')
+                              : null;
+                          final mediaUrl = hasMedia
+                              ? ((attachedMedia!.objectUrl != null && !attachedMedia!.objectUrl!.startsWith('blob:'))
+                                  ? attachedMedia!.objectUrl
+                                  : 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=600')
+                              : null;
+
                           setState(() {
                             RuangTaniService.createPost(
                               userName: profile.name,
                               userLocation: attachedLocation,
                               postText: text.isNotEmpty ? text : 'Membagikan foto kegiatan pertanian.',
-                              attachedImageLabel: attachedMedia?.fileName,
-                              imageUrl: attachedMedia?.objectUrl,
+                              attachedImageLabel: mediaLabel,
+                              imageUrl: mediaUrl,
                               attachedBytes: attachedMedia?.bytes,
                               category: selectedCategory,
                             );

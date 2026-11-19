@@ -90,7 +90,7 @@ class RuangTaniService {
   }
 
   static Stream<List<RuangTaniPost>> getPostsStream({String category = 'Semua', String searchQuery = ''}) {
-    // Mendengarkan perubahan Firestore secara live
+    // Mendengarkan perubahan Cloud Firestore secara live
     return FirebaseService.firestore
         .collection('ruang_tani')
         .snapshots()
@@ -107,7 +107,7 @@ class RuangTaniService {
           timeText: 'Baru saja',
           createdAt: DateTime.tryParse(data['createdAt']?.toString() ?? '') ?? DateTime.now(),
           postText: data['postText'] as String? ?? '',
-          attachedImageLabel: data['attachedImageLabel'] as String?,
+          attachedImageLabel: data['attachedImageLabel'] as String? ?? (data['imageUrl'] != null ? '📷 Foto Kegiatan Pertanian' : null),
           imageUrl: data['imageUrl'] as String?,
           category: data['category'] as String? ?? 'Diskusi',
           likeCount: (data['likeCount'] as num?)?.toInt() ?? 0,
@@ -158,12 +158,14 @@ class RuangTaniService {
     _posts.insert(0, newPost);
     postsNotifier.value++;
 
-    // Otomatis sinkronkan postingan baru ke Cloud Firestore ('ruang_tani')
+    // Sinkronkan data postingan LENGKAP (termasuk label & foto) ke Cloud Firestore ('ruang_tani')
     FirebaseService.syncPostToFirestore({
       'id': newPost.id,
       'userName': newPost.userName,
       'userLocation': newPost.userLocation,
       'postText': newPost.postText,
+      'attachedImageLabel': newPost.attachedImageLabel,
+      'imageUrl': newPost.imageUrl,
       'category': newPost.category,
       'createdAt': newPost.createdAt.toIso8601String(),
       'likeCount': 0,
