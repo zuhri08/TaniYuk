@@ -39,64 +39,8 @@ class RuangTaniPost {
 }
 
 class RuangTaniService {
-  static final List<RuangTaniPost> _posts = [
-    RuangTaniPost(
-      id: '1',
-      userName: 'Pak Joko',
-      userLocation: 'Bandung',
-      timeText: '2 jam lalu',
-      createdAt: DateTime.now().subtract(const Duration(hours: 2)),
-      postText:
-          'Alhamdulillah, padi tumbuh subur! Ada yang punya tips supaya hasil panen makin maksimal?',
-      attachedImageLabel: '🌾 Lahan Padi Subur - Bandung',
-      imageColor: const Color(0xFF89D7B7),
-      category: 'Diskusi',
-      likeCount: 34,
-      isLiked: false,
-      commentCount: 2,
-      comments: [
-        'Bu Siti: Gunakan pupuk organik cair di minggu ke-4 pak!',
-        'Tani Muda: Pastikan irigasi lancar sebelum pemupukan.',
-      ],
-    ),
-    RuangTaniPost(
-      id: '2',
-      userName: 'Bu Siti',
-      userLocation: 'Lembang',
-      timeText: '5 jam lalu',
-      createdAt: DateTime.now().subtract(const Duration(hours: 5)),
-      postText:
-          'Panen tomat pertama musim ini. Segar dan siap dipasarkan ke Pasar Tani!',
-      attachedImageLabel: '🍅 Hasil Panen Tomat Segar',
-      imageColor: const Color(0xFFFEE2E2),
-      category: 'Panen',
-      likeCount: 42,
-      isLiked: true,
-      commentCount: 2,
-      comments: [
-        'Pak Joko: MasyaAllah hasilnya bagus sekali Bu Siti!',
-        'Budi Santoso: Berapa harga per kg sekarang bu?',
-      ],
-    ),
-    RuangTaniPost(
-      id: '3',
-      userName: 'Tani Muda',
-      userLocation: 'Garut',
-      timeText: '1 hari lalu',
-      createdAt: DateTime.now().subtract(const Duration(days: 1)),
-      postText:
-          'Sharing pengalaman bikin pupuk kompos sendiri dari limbah jerami. Lebih hemat dan hasil tanah lebih gembur!',
-      attachedImageLabel: '🍃 Pembuatan Pupuk Kompos',
-      imageColor: const Color(0xFFFEF3C7),
-      category: 'Tips',
-      likeCount: 56,
-      isLiked: false,
-      commentCount: 1,
-      comments: [
-        'Pak Joko: Mantap mas, hemat biaya operasional lahan.',
-      ],
-    ),
-  ];
+  // Daftar postingan nyata pengguna (bebas data dummy statis)
+  static final List<RuangTaniPost> _posts = [];
 
   static List<RuangTaniPost> getPosts({String category = 'Semua', String searchQuery = ''}) {
     return _posts.where((post) {
@@ -120,8 +64,8 @@ class RuangTaniService {
   }) {
     final newPost = RuangTaniPost(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
-      userName: userName,
-      userLocation: userLocation,
+      userName: userName.isEmpty ? 'Petani TaniYuk' : userName,
+      userLocation: userLocation.isEmpty ? 'Indonesia' : userLocation,
       timeText: 'Baru saja',
       createdAt: DateTime.now(),
       postText: postText,

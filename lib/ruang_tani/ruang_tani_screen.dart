@@ -4,6 +4,7 @@ import '../util/permission_helper.dart';
 import '../util/media_picker_service.dart';
 import '../akun/notifikasi.dart';
 import '../services/ruang_tani_service.dart';
+import '../services/app_store.dart';
 
 class RuangTaniScreen extends StatefulWidget {
   const RuangTaniScreen({super.key});
@@ -14,7 +15,7 @@ class RuangTaniScreen extends StatefulWidget {
 
 class _RuangTaniScreenState extends State<RuangTaniScreen> {
   int _selectedChip = 0;
-  final List<String> _categories = ['Semua', 'Diskusi', 'Tips', 'Panen'];
+  final List<String> _categories = ['Semua', 'Diskusi', 'Keluh Kesah', 'Berita', 'Tips', 'Panen'];
   String _searchQuery = '';
 
   List<RuangTaniPost> get _filteredPosts {
@@ -162,7 +163,7 @@ class _RuangTaniScreenState extends State<RuangTaniScreen> {
                   const SizedBox(height: 6),
                   Wrap(
                     spacing: 8,
-                    children: ['Diskusi', 'Tips', 'Panen'].map((category) {
+                    children: ['Diskusi', 'Keluh Kesah', 'Berita', 'Tips', 'Panen'].map((category) {
                       final isSelected = selectedCategory == category;
                       return ChoiceChip(
                         label: Text(category),
@@ -201,11 +202,12 @@ class _RuangTaniScreenState extends State<RuangTaniScreen> {
                         icon: const Icon(Icons.location_on_outlined, color: Color(0xFF132E25), size: 24),
                         tooltip: 'Sematkan Lokasi GPS',
                         onPressed: () {
+                          final loc = AppStore.instance.profile.location;
                           setModalState(() {
-                            attachedLocation = 'Bandung (GPS Terdeteksi)';
+                            attachedLocation = loc.isNotEmpty ? loc : 'Indonesia (GPS Terdeteksi)';
                           });
                           messenger.showSnackBar(
-                            const SnackBar(content: Text('Lokasi GPS berhasil disematkan!')),
+                            SnackBar(content: Text('Lokasi GPS ($attachedLocation) berhasil disematkan!')),
                           );
                         },
                       ),
@@ -222,9 +224,10 @@ class _RuangTaniScreenState extends State<RuangTaniScreen> {
                             return;
                           }
 
+                          final profile = AppStore.instance.profile;
                           setState(() {
                             RuangTaniService.createPost(
-                              userName: 'Budi Santoso',
+                              userName: profile.name,
                               userLocation: attachedLocation,
                               postText: text.isNotEmpty ? text : 'Membagikan foto kegiatan pertanian.',
                               attachedImageLabel: attachedMedia?.fileName,
@@ -453,7 +456,8 @@ class _RuangTaniScreenState extends State<RuangTaniScreen> {
                         onPressed: () {
                           final cText = commentController.text.trim();
                           if (cText.isNotEmpty) {
-                            RuangTaniService.addComment(post.id, 'Budi Santoso', cText);
+                            final myName = AppStore.instance.profile.name;
+                            RuangTaniService.addComment(post.id, myName, cText);
                             commentController.clear();
                             setModalState(() {});
                             setState(() {});
@@ -592,10 +596,57 @@ class _RuangTaniScreenState extends State<RuangTaniScreen> {
           // Feed Post List
           Expanded(
             child: _filteredPosts.isEmpty
-                ? const Center(
-                    child: Text(
-                      'Tidak ada postingan ditemukan.',
-                      style: TextStyle(color: Colors.grey, fontSize: 14),
+                ? Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(28.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(20),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF89D7B7).withValues(alpha: 0.3),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.forum_outlined,
+                              size: 54,
+                              color: Color(0xFF132E25),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          const Text(
+                            'Belum Ada Postingan Komunitas',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF1F2937),
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          const Text(
+                            'Jadilah yang pertama berbagi berita, tips, atau keluh kesah pertanian Anda di Ruang Tani!',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Color(0xFF6B7280),
+                              height: 1.4,
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          ElevatedButton.icon(
+                            onPressed: () => _showCreatePostBottomSheet(context),
+                            icon: const Icon(Icons.edit_note_rounded, size: 18),
+                            label: const Text('Buat Postingan Baru', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF132E25),
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   )
                 : ListView.builder(
