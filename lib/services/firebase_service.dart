@@ -80,6 +80,25 @@ class FirebaseService {
     }
   }
 
+  static Future<UserCredential?> loginWithGoogle() async {
+    await initializeFirebase();
+    try {
+      final googleProvider = GoogleAuthProvider();
+      final cred = await auth.signInWithPopup(googleProvider);
+      if (cred.user != null) {
+        await saveUserProfileToFirestore(
+          uid: cred.user!.uid,
+          name: cred.user!.displayName ?? 'Petani Google TaniYuk',
+          email: cred.user!.email ?? 'petani.google@taniyuk.id',
+        );
+      }
+      return cred;
+    } catch (e) {
+      debugPrint('Firebase Google Auth Notice: $e');
+      return null;
+    }
+  }
+
   static Future<void> logout() async {
     await auth.signOut();
   }

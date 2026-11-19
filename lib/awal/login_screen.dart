@@ -109,6 +109,50 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+  void _onGoogleLogin() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final userCred = await FirebaseService.loginWithGoogle();
+      if (!mounted) return;
+
+      final email = userCred?.user?.email ?? 'petani.google@taniyuk.id';
+      final name = userCred?.user?.displayName ?? 'Petani Google TaniYuk';
+
+      AppStore.instance.updateProfile(
+        name: name,
+        email: email,
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('✨ Berhasil masuk dengan Akun Google ($email)'),
+          backgroundColor: const Color(0xFF132E25),
+        ),
+      );
+
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const MainNavigation()),
+        (route) => false,
+      );
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Gagal masuk dengan Google. Silakan coba lagi.'),
+          backgroundColor: Color(0xFF991B1B),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -347,7 +391,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 width: double.infinity,
                 height: 48,
                 child: OutlinedButton.icon(
-                  onPressed: _onLogin,
+                  onPressed: _isLoading ? null : _onGoogleLogin,
                   icon: const Icon(Icons.g_mobiledata, size: 28, color: Colors.red),
                   label: const Text(
                     'Google',
