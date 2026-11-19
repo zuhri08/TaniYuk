@@ -169,11 +169,21 @@ class FirebaseService {
   static Future<void> syncPostToFirestore(Map<String, dynamic> postData) async {
     await initializeFirebase();
     try {
+      final sanitizedData = Map<String, dynamic>.from(postData);
+
+      // Pastikan payload foto HP tidak melebihi batas 1 MiB Cloud Firestore
+      if (sanitizedData['imageUrl'] != null) {
+        final imgStr = sanitizedData['imageUrl'].toString();
+        if (imgStr.length > 400000) {
+          sanitizedData['imageUrl'] = 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=600';
+        }
+      }
+
       await firestore
           .collection('ruang_tani')
-          .doc(postData['id'] as String)
-          .set(postData, SetOptions(merge: true));
-      debugPrint('Cloud Firestore: Post synced (${postData['id']})');
+          .doc(sanitizedData['id'] as String)
+          .set(sanitizedData, SetOptions(merge: true));
+      debugPrint('Cloud Firestore: Post synced (${sanitizedData['id']})');
     } catch (e) {
       debugPrint('Firestore sync post notice: $e');
     }
