@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'tips_trik_screen.dart';
 import '../util/permission_helper.dart';
@@ -230,11 +231,14 @@ class _RuangTaniScreenState extends State<RuangTaniScreen> {
                           final mediaLabel = hasMedia
                               ? (attachedMedia!.fileName.isNotEmpty ? attachedMedia!.fileName : '📷 Foto Kegiatan Pertanian.jpg')
                               : null;
-                          final mediaUrl = hasMedia
-                              ? ((attachedMedia!.objectUrl != null && !attachedMedia!.objectUrl!.startsWith('blob:'))
-                                  ? attachedMedia!.objectUrl
-                                  : 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=600')
-                              : null;
+                          String? mediaUrl;
+                          if (hasMedia) {
+                            if (attachedMedia!.bytes != null && attachedMedia!.bytes!.isNotEmpty) {
+                              mediaUrl = 'data:image/jpeg;base64,${base64Encode(attachedMedia!.bytes!)}';
+                            } else if (attachedMedia!.objectUrl != null && !attachedMedia!.objectUrl!.startsWith('blob:')) {
+                              mediaUrl = attachedMedia!.objectUrl;
+                            }
+                          }
 
                           setState(() {
                             RuangTaniService.createPost(
@@ -784,18 +788,29 @@ class _RuangTaniScreenState extends State<RuangTaniScreen> {
                 width: double.infinity,
                 height: 200,
                 color: post.imageColor,
-                child: Image.network(
-                  post.imageUrl!,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Center(
-                      child: Text(
-                        post.attachedImageLabel ?? '📷 Foto Terlampir',
-                        style: const TextStyle(fontWeight: FontWeight.bold),
+                child: post.imageUrl!.startsWith('data:image')
+                    ? Image.memory(
+                        base64Decode(post.imageUrl!.split(',').last),
+                        fit: BoxFit.cover,
+                        errorBuilder: (c, e, s) => Center(
+                          child: Text(
+                            post.attachedImageLabel ?? '📷 Foto Terlampir',
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      )
+                    : Image.network(
+                        post.imageUrl!,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Center(
+                            child: Text(
+                              post.attachedImageLabel ?? '📷 Foto Terlampir',
+                              style: const TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          );
+                        },
                       ),
-                    );
-                  },
-                ),
               ),
             )
           else if (post.attachedImageLabel != null)
