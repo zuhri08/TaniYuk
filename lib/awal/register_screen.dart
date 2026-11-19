@@ -95,23 +95,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
         _isLoading = false;
       });
 
-      AppStore.instance.updateProfile(
-        name: name,
-        email: email,
-        phone: phone,
-      );
+      String errorMessage = 'Gagal membuat akun. Silakan periksa data pendaftaran Anda.';
+      final errStr = e.toString().toLowerCase();
+      if (errStr.contains('email-already-in-use')) {
+        errorMessage = 'Email ini sudah terdaftar. Silakan gunakan email lain atau masuk.';
+      } else if (errStr.contains('weak-password')) {
+        errorMessage = 'Kata sandi terlalu lemah. Gunakan minimal 6 karakter.';
+      } else if (errStr.contains('invalid-email')) {
+        errorMessage = 'Format email tidak valid.';
+      }
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Registrasi selesai! Akun terdaftar: $email'),
-          backgroundColor: const Color(0xFF132E25),
+          content: Text(errorMessage),
+          backgroundColor: const Color(0xFF991B1B),
         ),
-      );
-
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (context) => const MainNavigation()),
-        (route) => false,
       );
     }
   }

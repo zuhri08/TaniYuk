@@ -77,17 +77,23 @@ class _LoginScreenState extends State<LoginScreen> {
         _isLoading = false;
       });
 
-      // Handle offline or fallback demo login gracefully
+      String errorMessage = 'Email atau kata sandi yang Anda masukkan salah.';
+      final errStr = e.toString().toLowerCase();
+      if (errStr.contains('user-not-found') || errStr.contains('invalid-credential')) {
+        errorMessage = 'Akun belum terdaftar atau email/kata sandi salah.';
+      } else if (errStr.contains('wrong-password')) {
+        errorMessage = 'Kata sandi yang Anda masukkan salah. Silakan coba lagi.';
+      } else if (errStr.contains('invalid-email')) {
+        errorMessage = 'Format email tidak valid.';
+      } else if (errStr.contains('network-request-failed')) {
+        errorMessage = 'Gagal terhubung ke jaringan. Periksa koneksi internet Anda.';
+      }
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Firebase Auth: ${e.toString().contains('user-not-found') ? 'Akun belum terdaftar. Silakan buat akun baru.' : 'Masuk berhasil dengan mode terverifikasi.'}'),
+          content: Text(errorMessage),
+          backgroundColor: const Color(0xFF991B1B),
         ),
-      );
-
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (context) => const MainNavigation()),
-        (route) => false,
       );
     }
   }
