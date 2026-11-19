@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'firebase_service.dart';
 
 class RuangTaniPost {
   final String id;
@@ -81,6 +82,19 @@ class RuangTaniService {
     );
 
     _posts.insert(0, newPost);
+
+    // Otomatis sinkronkan postingan baru ke Cloud Firestore ('ruang_tani')
+    FirebaseService.syncPostToFirestore({
+      'id': newPost.id,
+      'userName': newPost.userName,
+      'userLocation': newPost.userLocation,
+      'postText': newPost.postText,
+      'category': newPost.category,
+      'createdAt': newPost.createdAt.toIso8601String(),
+      'likeCount': 0,
+      'commentCount': 0,
+    });
+
     return newPost;
   }
 
