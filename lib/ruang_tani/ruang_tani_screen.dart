@@ -314,8 +314,7 @@ class _RuangTaniScreenState extends State<RuangTaniScreen> {
                   PermissionHelper.requestCameraPermission(
                     pageContext,
                     onGranted: () async {
-                      var pickedMedia = await MediaPickerService.pickImageFromCamera();
-                      pickedMedia ??= await MediaPickerService.pickSamplePlantImage();
+                      final pickedMedia = await MediaPickerService.pickImageFromCamera();
                       if (pickedMedia != null) {
                         onPhotoSelected(pickedMedia);
                       }

@@ -20,11 +20,6 @@ class MediaPickerService {
 
   static Future<PickedMediaResult?> pickImageFromCamera() async {
     try {
-      if (defaultTargetPlatform == TargetPlatform.windows ||
-          defaultTargetPlatform == TargetPlatform.macOS ||
-          defaultTargetPlatform == TargetPlatform.linux) {
-        return await pickSamplePlantImage();
-      }
       final XFile? photo = await _picker.pickImage(
         source: ImageSource.camera,
         imageQuality: 85,
@@ -41,7 +36,7 @@ class MediaPickerService {
     } catch (e) {
       debugPrint('Error picking image from camera: $e');
     }
-    return pickSamplePlantImage();
+    return null;
   }
 
   static Future<PickedMediaResult?> pickImageFromGallery() async {

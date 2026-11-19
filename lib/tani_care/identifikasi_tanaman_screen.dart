@@ -60,17 +60,14 @@ class _IdentifikasiTanamanScreenState extends State<IdentifikasiTanamanScreen> {
   ];
 
   void _triggerRealCamera() async {
-    var pickedMedia = await MediaPickerService.pickImageFromCamera();
-    pickedMedia ??= await MediaPickerService.pickSamplePlantImage();
-
+    final pickedMedia = await MediaPickerService.pickImageFromCamera();
     if (pickedMedia != null) {
       _analyzeSelectedMedia(pickedMedia);
     }
   }
 
   void _triggerRealGallery() async {
-    var pickedMedia = await MediaPickerService.pickImageFromGallery();
-    pickedMedia ??= await MediaPickerService.pickSamplePlantImage();
+    final pickedMedia = await MediaPickerService.pickImageFromGallery();
     if (pickedMedia != null) {
       _analyzeSelectedMedia(pickedMedia);
     }
