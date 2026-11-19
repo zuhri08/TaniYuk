@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/foundation.dart';
 import 'awal/splash_screen.dart';
+import 'services/firebase_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await FirebaseService.initializeFirebase();
   runApp(
     DevicePreview(
       enabled: !kReleaseMode,

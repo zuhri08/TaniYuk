@@ -106,7 +106,8 @@ class _LiveCameraDialogState extends State<LiveCameraDialog> {
               ),
               child: Center(
                 child: _isCapturing
-                    ? const CircularProgressIndicator(color: Colors.white)
+                    ? const CircularProgressIndicator(color: Colors
+                    .white)
                     : const Icon(Icons.camera_alt_rounded, color: Colors.white, size: 38),
               ),
             ),
